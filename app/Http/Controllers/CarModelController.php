@@ -18,12 +18,17 @@ class CarModelController extends Controller {
         $this->modelRepo = $modelRepo;
         $this->brandRepo = $brandRepo;
     }
-
     public function index() {
         $models = $this->modelRepo->all();
         $brands = $this->brandRepo->all();
 
-        return view( 'admin.cars.models.index', compact( 'models', 'brands' ) );
+        return view( 'admin.cars.models.index', [
+            'models'        => $models,
+            'brands'        => $brands,
+            'total'         => $models->count(),
+            'activeCount'   => $models->where( 'is_active', 1 )->count(),
+            'inactiveCount' => $models->where( 'is_active', 0 )->count(),
+        ] );
     }
 
     public function store( StoreCarModelRequest $request ) {
