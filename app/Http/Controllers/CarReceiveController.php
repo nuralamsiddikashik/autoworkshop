@@ -59,4 +59,13 @@ class CarReceiveController extends Controller {
 
         return response()->json( $car );
     }
+
+    public function findByRegistration( Request $request ) {
+        $car = $this->repo->findByRegistration(
+            $request->customer_id,
+            $request->registration_no
+        );
+
+        return response()->json( $car ); // ✅ MUST RETURN JSON
+    }
 }

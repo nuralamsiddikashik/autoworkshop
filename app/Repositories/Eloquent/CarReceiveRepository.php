@@ -10,14 +10,14 @@ class CarReceiveRepository implements CarReceiveRepositoryInterface {
         // 1. find or create car
         $car = CustomerCar::firstOrCreate(
             [
-                'customer_id'  => $data['customer_id'],
-                'car_model_id' => $data['car_model_id'],
+                'customer_id'     => $data['customer_id'],
+                'registration_no' => strtoupper( trim( $data['registration_no'] ) ),
             ],
             [
-                'car_brand_id'    => $data['car_brand_id'],
-                'vin'             => $data['vin'] ?? null,
-                'registration_no' => $data['registration_no'] ?? null,
-                'odometer'        => $data['odometer'] ?? null,
+                'car_brand_id' => $data['car_brand_id'],
+                'car_model_id' => $data['car_model_id'],
+                'vin'          => $data['vin'] ?? null,
+                'odometer'     => $data['odometer'] ?? null,
             ]
         );
 
@@ -43,11 +43,24 @@ class CarReceiveRepository implements CarReceiveRepositoryInterface {
     }
 
     public function findByCustomerAndModel( $customerId, $modelId ) {
-        return CarReceive::where(
-            [
-                'customer_id'  => $customerId,
-                'car_model_id' => $modelId,
-            ]
-        )->first();
+        return CustomerCar::where( 'customer_id', $customerId )
+            ->where( 'car_model_id', $modelId )
+            ->orderByDesc( 'id' ) // latest
+            ->first();
+    }
+
+    public function findByRegistration( $customerId, $registrationNo ) {
+        // 🔥 normalize input (user input clean)
+        $normalized = strtolower( preg_replace( '/[^a-z0-9]/', '', $registrationNo ) );
+
+        return CustomerCar::where( 'customer_id', $customerId )
+            ->get()
+            ->first( function ( $car ) use ( $normalized ) {
+
+                // 🔥 normalize DB value
+                $db = strtolower( preg_replace( '/[^a-z0-9]/', '', $car->registration_no ) );
+
+                return $db === $normalized;
+            } );
     }
 }

@@ -1,4 +1,5 @@
 <?php
+namespace App\Models;
 
 use App\Models\Customer;
 use App\Models\CustomerCar;

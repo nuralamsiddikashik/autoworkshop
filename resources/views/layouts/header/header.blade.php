@@ -47,7 +47,12 @@
       <i class="fas fa-car nav-icon"></i>
       <span class="nav-label">Car Models</span>
     </a>
-
+    
+    <a href="{{ route('car-receives.index') }}" class="nav-item {{ request()->routeIs('car-receives.*') ? 'active' : '' }}">
+      <i class="fas fa-receipt nav-icon"></i>
+      <span class="nav-label">Car Receives</span>
+    </a>
+    
   </div>
 </div>
 

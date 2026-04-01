@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CarBrandController;
 use App\Http\Controllers\CarModelController;
+use App\Http\Controllers\CarReceiveController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
@@ -46,4 +47,21 @@ Route::prefix( 'cars' )->name( 'cars.' )->group( function () {
 
         } );
 
+} );
+
+Route::prefix( 'car-receives' )->name( 'car-receives.' )->group( function () {
+
+    Route::controller( CarReceiveController::class )->group( function () {
+
+        // ================= MAIN =================
+        Route::get( '/', 'index' )->name( 'index' );
+        Route::post( '/', 'store' )->name( 'store' );
+
+        // ================= AJAX =================
+        Route::get( '/customer/{id}', 'getCustomer' )->name( 'customer' );
+        Route::get( '/customer-car', 'getCustomerCar' )->name( 'customer-car' );
+        Route::get( '/find-by-registration', 'findByRegistration' )
+            ->name( 'car-receives.find-by-registration' );
+
+    } );
 } );
