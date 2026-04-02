@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\JobCard;
 use Illuminate\Database\Eloquent\Model;
 
 class CarReceive extends Model {
@@ -20,5 +21,9 @@ class CarReceive extends Model {
 
     public function car() {
         return $this->belongsTo( \App\Models\CustomerCar::class, 'customer_car_id' );
+    }
+
+    public function jobCard() {
+        return $this->hasOne( JobCard::class );
     }
 }

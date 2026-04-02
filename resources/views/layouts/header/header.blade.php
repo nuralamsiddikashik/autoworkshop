@@ -57,7 +57,20 @@
       <i class="fas fa-receipt nav-icon"></i>
       <span class="nav-label">Car Receives Create</span>
     </a>
-    
+
+    <div class="sidebar-section-label">JOB CARDS</div>
+    <a href="{{ route('job-cards.create') }}" class="nav-item {{ request()->routeIs('job-cards.create') ? 'active' : '' }}">
+      <i class="fas fa-file nav-icon"></i>
+      <span class="nav-label">Job Cards Create</span>
+    </a>
+
+    <div class="sidebar-section-label">INVOICES</div>
+  
+    <a href="{{ route('invoices.create') }}" class="nav-item {{ request()->routeIs('invoices.create') ? 'active' : '' }}">
+      <i class="fas fa-file nav-icon"></i>
+      <span class="nav-label">Invoices Create</span>
+    </a>
+      
   </div>
 </div>
 

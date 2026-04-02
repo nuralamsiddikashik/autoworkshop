@@ -5,6 +5,8 @@ use App\Http\Controllers\CarModelController;
 use App\Http\Controllers\CarReceiveController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\JobCardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get( '/', [DashboardController::class, 'index'] )->name( 'dashboard' );
@@ -66,3 +68,34 @@ Route::prefix( 'car-receives' )->name( 'car-receives.' )->group( function () {
 
     } );
 } );
+
+Route::prefix( 'job-cards' )->name( 'job-cards.' )->group( function () {
+
+    Route::controller( JobCardController::class )->group( function () {
+
+        // ================= MAIN =================
+
+        Route::get( '/create', 'create' )->name( 'create' );
+        Route::post( '/store', 'store' )->name( 'store' );
+
+        // ================= AJAX =================
+        Route::get( '/find-receive', 'find' )
+            ->name( 'job-cards.find' );
+
+    } );
+} );
+
+Route::prefix( 'invoices' )
+    ->name( 'invoices.' )
+    ->controller( InvoiceController::class )
+    ->group( function () {
+
+        // Create Page
+        Route::get( '/create', 'create' )->name( 'create' );
+
+        // Store
+        Route::post( '/store', 'store' )->name( 'store' );
+
+        // 🔥 Job No Auto Fetch
+        Route::get( '/find-job', 'find' )->name( 'find' );
+    } );
