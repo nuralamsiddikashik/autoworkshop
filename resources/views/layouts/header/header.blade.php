@@ -48,9 +48,14 @@
       <span class="nav-label">Car Models</span>
     </a>
     
-    <a href="{{ route('car-receives.index') }}" class="nav-item {{ request()->routeIs('car-receives.*') ? 'active' : '' }}">
+    <a href="{{ route('car-receives.index') }}" class="nav-item {{ request()->routeIs('car-receives.index') ? 'active' : '' }}">
       <i class="fas fa-receipt nav-icon"></i>
       <span class="nav-label">Car Receives</span>
+    </a>
+
+    <a href="{{ route('car-receives.create') }}" class="nav-item {{ request()->routeIs('car-receives.create') ? 'active' : '' }}">
+      <i class="fas fa-receipt nav-icon"></i>
+      <span class="nav-label">Car Receives Create</span>
     </a>
     
   </div>

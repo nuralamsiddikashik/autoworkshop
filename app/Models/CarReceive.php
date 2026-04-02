@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Models;
 
-use App\Models\Customer;
-use App\Models\CustomerCar;
 use Illuminate\Database\Eloquent\Model;
 
 class CarReceive extends Model {
+
     protected $fillable = [
         'receive_no',
         'customer_id',
@@ -15,10 +15,10 @@ class CarReceive extends Model {
     ];
 
     public function customer() {
-        return $this->belongsTo( Customer::class );
+        return $this->belongsTo( \App\Models\Customer::class );
     }
 
     public function car() {
-        return $this->belongsTo( CustomerCar::class, 'customer_car_id' );
+        return $this->belongsTo( \App\Models\CustomerCar::class, 'customer_car_id' );
     }
 }

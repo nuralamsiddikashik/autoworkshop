@@ -1,454 +1,357 @@
 @extends('layouts.app')
 
 @section('content')
+
+{{-- ===== INLINE STYLES ===== --}}
 <style>
-    .receive-page {
-        max-width: 860px;
-        margin: 2.5rem auto;
-        padding: 0 1.25rem;
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    .cr-page * { box-sizing: border-box; }
+
+    .cr-page {
         font-family: 'DM Sans', sans-serif;
+        padding: 2rem 1.5rem;
+        background: #F7F6F3;
+        min-height: 100vh;
     }
 
     /* ── Header ── */
-    .page-header {
+    .cr-header {
         display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 2rem;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.75rem;
+    }
+    .cr-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #18181B;
+        letter-spacing: -0.4px;
+        line-height: 1.2;
+    }
+    .cr-subtitle {
+        font-size: 13px;
+        color: #71717A;
+        margin-top: 3px;
     }
 
-    .page-header-icon {
-        width: 42px;
-        height: 42px;
-        background: #1a1a2e;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .page-header-icon svg {
-        width: 21px;
-        height: 21px;
-        stroke: #e8c96a;
-        fill: none;
-        stroke-width: 2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-    .page-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #1a1a2e;
-        letter-spacing: -0.02em;
-        margin: 0;
-    }
-
-    .page-subtitle {
-        font-size: 0.8rem;
-        color: #8b8fa8;
-        margin: 0;
-        margin-top: 1px;
-    }
-
-    /* ── Form card ── */
-    .form-card {
+    /* ── Table Card ── */
+    .cr-table-card {
         background: #fff;
-        border: 1px solid #ebebf0;
-        border-radius: 16px;
+        border: 1px solid #E4E4E7;
+        border-radius: 14px;
         overflow: hidden;
     }
-
-    /* ── Section header inside card ── */
-    .section-head {
+    .cr-table-header {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 9px;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid #f2f2f6;
-        background: #f8f8fc;
+        padding: 14px 20px;
+        border-bottom: 1px solid #F4F4F5;
     }
-
-    .section-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 7px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
+    .cr-record-count {
+        font-size: 13px;
+        color: #71717A;
     }
-
-    .section-icon.customer { background: #ede9fe; }
-    .section-icon.car      { background: #fef3c7; }
-    .section-icon.details  { background: #e0f2fe; }
-
-    .section-icon svg {
-        width: 15px;
-        height: 15px;
-        fill: none;
-        stroke-width: 2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-    .section-icon.customer svg { stroke: #7c3aed; }
-    .section-icon.car      svg { stroke: #d97706; }
-    .section-icon.details  svg { stroke: #0284c7; }
-
-    .section-title {
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: #3a3d5c;
-    }
-
-    /* ── Field grid ── */
-    .field-grid {
-        display: grid;
-        gap: 1.25rem;
-        padding: 1.5rem;
-        border-bottom: 1px solid #f2f2f6;
-    }
-
-    .fg-3 { grid-template-columns: repeat(3, 1fr); }
-    .fg-4 { grid-template-columns: repeat(4, 1fr); }
-    .fg-1-3 { grid-template-columns: 1fr 3fr; }
-
-    .field-group { display: flex; flex-direction: column; gap: 6px; }
-
-    .field-label {
-        font-size: 0.72rem;
+    .cr-record-count strong {
+        color: #18181B;
         font-weight: 600;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        color: #8b8fa8;
     }
 
-    .field-control {
-        height: 40px;
-        border: 1px solid #dde0f0;
-        border-radius: 9px;
-        padding: 0 13px;
-        font-size: 0.875rem;
-        font-family: 'DM Sans', sans-serif;
-        color: #1a1a2e;
-        background: #fff;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
+    .cr-table-wrap { overflow-x: auto; }
+
+    .cr-table {
         width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
     }
-
-    .field-control:focus {
-        border-color: #1a1a2e;
-        box-shadow: 0 0 0 3px rgba(26, 26, 46, 0.07);
+    .cr-table thead tr {
+        background: #FAFAFA;
+        border-bottom: 1px solid #F4F4F5;
     }
-
-    .field-control:read-only {
-        background: #f8f8fc;
-        color: #6b6f8c;
-        cursor: default;
-    }
-
-    .field-control:read-only:focus {
-        border-color: #dde0f0;
-        box-shadow: none;
-    }
-
-    select.field-control {
-        appearance: none;
-        -webkit-appearance: none;
-        padding-right: 34px;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 11 11'%3E%3Cpath fill='%238b8fa8' d='M5.5 7.5L1 3h9z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 12px center;
-        cursor: pointer;
-    }
-
-    select.field-control:focus {
-        border-color: #1a1a2e;
-        box-shadow: 0 0 0 3px rgba(26, 26, 46, 0.07);
-    }
-
-    /* readonly pill badge */
-    .readonly-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        background: #f0f0f8;
-        color: #8b8fa8;
-        font-size: 0.65rem;
+    .cr-table thead th {
+        padding: 11px 18px;
+        text-align: left;
+        font-size: 11px;
         font-weight: 600;
-        letter-spacing: 0.05em;
         text-transform: uppercase;
-        padding: 2px 7px;
-        border-radius: 50px;
-        margin-left: 6px;
+        letter-spacing: 0.55px;
+        color: #A1A1AA;
+        white-space: nowrap;
+    }
+    .cr-table tbody tr {
+        border-bottom: 1px solid #F4F4F5;
+        transition: background 0.1s ease;
+    }
+    .cr-table tbody tr:hover { background: #FAFAFA; }
+    .cr-table tbody td {
+        padding: 14px 18px;
+        color: #18181B;
         vertical-align: middle;
     }
 
-    /* ── Footer / Submit ── */
-    .form-footer {
+    /* Badge & Avatar Styles */
+    .receive-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11.5px;
+        font-weight: 500;
+        background: #F4F4F5;
+        color: #3F3F46;
+        padding: 4px 9px;
+        border-radius: 6px;
+        border: 1px solid #E4E4E7;
+        white-space: nowrap;
+    }
+
+    .customer-cell { display: flex; align-items: center; gap: 10px; }
+    .cust-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+    .av-a { background: #DBEAFE; color: #1E40AF; }
+    .av-b { background: #DCFCE7; color: #166534; }
+    .av-c { background: #EDE9FE; color: #5B21B6; }
+    .av-d { background: #FFE4E6; color: #9F1239; }
+    .av-e { background: #FEF3C7; color: #92400E; }
+    
+    .cust-name { font-weight: 600; color: #18181B; }
+    
+    .contact-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        font-size: 11.5px;
+    }
+    .contact-item { display: flex; align-items: center; gap: 6px; color: #52525B; }
+    .contact-icon { font-size: 12px; filter: grayscale(1); opacity: 0.8; }
+
+    .brand-pill {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+    .brand-toyota   { background: #DBEAFE; color: #1D4ED8; }
+    .brand-honda    { background: #FEF3C7; color: #92400E; }
+    .brand-nissan   { background: #DCFCE7; color: #166534; }
+    .brand-bmw      { background: #EDE9FE; color: #5B21B6; }
+    .brand-default  { background: #F4F4F5; color: #52525B; }
+
+    .vin-text { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #A1A1AA; }
+    .odo-text { font-variant-numeric: tabular-nums; font-weight: 500; }
+    .date-text { color: #71717A; font-size: 12.5px; white-space: nowrap; }
+    .text-muted-cell { color: #D4D4D8; }
+
+    /* Pagination */
+    .cr-pagination {
+        display: flex;
         justify-content: space-between;
-        padding: 1.25rem 1.5rem;
-    }
-
-    .footer-hint {
-        font-size: 0.78rem;
-        color: #b0b3c6;
-    }
-
-    .footer-hint span {
-        color: #e94b4b;
-        margin-right: 3px;
-    }
-
-    .btn-submit {
-        height: 44px;
-        padding: 0 30px;
-        background: #1a1a2e;
-        color: #e8c96a;
-        border: none;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        font-family: 'DM Sans', sans-serif;
-        cursor: pointer;
-        letter-spacing: -0.01em;
-        display: flex;
         align-items: center;
-        gap: 8px;
-        transition: background 0.15s, transform 0.1s;
-    }
-
-    .btn-submit svg {
-        width: 16px;
-        height: 16px;
-        stroke: #e8c96a;
-        fill: none;
-        stroke-width: 2.5;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-    }
-
-    .btn-submit:hover  { background: #2a2a4e; }
-    .btn-submit:active { transform: scale(0.97); }
-
-    /* ── Textarea ── */
-    textarea.field-control {
-        height: auto;
-        min-height: 40px;
-        resize: none;
-        padding-top: 10px;
-        padding-bottom: 10px;
-        line-height: 1.5;
-    }
-
-    @media (max-width: 720px) {
-        .fg-3, .fg-4, .fg-1-3 { grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (max-width: 480px) {
-        .fg-3, .fg-4, .fg-1-3 { grid-template-columns: 1fr; }
+        padding: 14px 20px;
+        border-top: 1px solid #F4F4F5;
+        font-size: 12.5px;
+        color: #71717A;
     }
 </style>
 
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<div class="cr-page">
 
-<div class="receive-page">
-
-    {{-- ── Page Header ── --}}
-    <div class="page-header">
-        <div class="page-header-icon">
-            <svg viewBox="0 0 24 24">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="12" y1="18" x2="12" y2="12"/>
-                <line x1="9" y1="15" x2="15" y2="15"/>
-            </svg>
-        </div>
+    <!-- Header -->
+    <div class="cr-header">
         <div>
-            <h1 class="page-title">Car Receive</h1>
-            <p class="page-subtitle">Register an incoming vehicle for service</p>
+            <div class="cr-title">Car Receive List</div>
+            <div class="cr-subtitle">Detailed vehicle entry records and owner information</div>
         </div>
     </div>
 
-    {{-- ── Form ── --}}
-    <form action="{{ route('car-receives.store') }}" method="POST">
-        @csrf
-        <div class="form-card">
+    <!-- Table -->
+    <div class="cr-table-card">
 
-            {{-- ===== CUSTOMER ===== --}}
-            <div class="section-head">
-                <div class="section-icon customer">
-                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
-                <span class="section-title">Customer Info</span>
+        <div class="cr-table-header">
+            <div class="cr-record-count">
+                Showing <strong>{{ $receives->count() }}</strong> of <strong>{{ $receives->total() }}</strong> records
             </div>
-
-            <div class="field-grid fg-3">
-                <div class="field-group">
-                    <label class="field-label">Customer</label>
-                    <select name="customer_id" id="customer_id" class="field-control" required>
-                        <option value="">Select customer</option>
-                        @foreach($customers as $customer)
-                            <option value="{{ $customer->id }}">
-                                {{ $customer->customer_name }} ({{ $customer->owner_phone }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">
-                        Phone
-                        <span class="readonly-tag">auto</span>
-                    </label>
-                    <input name="owner_phone" type="text" id="owner_phone" class="field-control" readonly placeholder="Auto-filled">
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">
-                        Address
-                        <span class="readonly-tag">auto</span>
-                    </label>
-                    <input type="text" id="address" class="field-control" readonly placeholder="Auto-filled">
-                </div>
-            </div>
-
-            {{-- ===== CAR ===== --}}
-            <div class="section-head">
-                <div class="section-icon car">
-                    <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                </div>
-                <span class="section-title">Vehicle Details</span>
-            </div>
-
-            <div class="field-grid fg-4">
-                <div class="field-group">
-                    <label class="field-label">Brand</label>
-                    <select name="car_brand_id" id="car_brand_id" class="field-control" required>
-                        <option value="">Select brand</option>
-                        @foreach($brands as $brand)
-                            <option value="{{ $brand->id }}">{{ $brand->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Model</label>
-                    <select name="car_model_id" id="car_model_id" class="field-control" required>
-                        <option value="">Select model</option>
-                        @foreach($models as $model)
-                            <option value="{{ $model->id }}">{{ $model->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">VIN</label>
-                    <input type="text" name="vin" id="vin" class="field-control" placeholder="e.g. 1HGBH41JXMN109186">
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Registration No</label>
-                    <input type="text" name="registration_no" id="registration_no" class="field-control" placeholder="e.g. DHA-1234">
-                </div>
-            </div>
-
-            {{-- ===== ODOMETER & NOTE ===== --}}
-            <div class="section-head">
-                <div class="section-icon details">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                </div>
-                <span class="section-title">Additional Details</span>
-            </div>
-
-            <div class="field-grid fg-1-3">
-                <div class="field-group">
-                    <label class="field-label">Odometer (km)</label>
-                    <input type="number" name="odometer" id="odometer" class="field-control" placeholder="e.g. 45000" min="0">
-                </div>
-
-                <div class="field-group">
-                    <label class="field-label">Note</label>
-                    <input type="text" name="note" class="field-control" placeholder="Any remarks about the vehicle condition...">
-                </div>
-            </div>
-
-            {{-- ===== FOOTER ===== --}}
-            <div class="form-footer">
-                <p class="footer-hint"><span>*</span> Required fields must be filled before submitting.</p>
-                <button type="submit" class="btn-submit">
-                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                    Submit
-                </button>
-            </div>
-
         </div>
-    </form>
+
+        <div class="cr-table-wrap">
+            <table class="cr-table">
+                <thead>
+                    <tr>
+                        <th>Receive No</th>
+                        <th>Customer</th>
+                        <th>Contact Details</th>
+                        <th>Brand & Model</th>
+                        <th>Registration</th>
+                        <th>VIN</th>
+                        <th>Odometer</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse($receives as $item)
+
+                        @php
+                            $avatarClasses = ['av-a','av-b','av-c','av-d','av-e'];
+                            $avatarClass   = $avatarClasses[$loop->index % count($avatarClasses)];
+
+                            $name = optional($item->customer)->customer_name ?? 'N/A';
+
+                            $initials = collect(explode(' ', $name))
+                                ->take(2)
+                                ->map(fn($w) => strtoupper(substr($w, 0, 1)))
+                                ->implode('');
+
+                            if (!$initials) $initials = '--';
+
+                            $brandName = strtolower(optional($item->car->brand)->name ?? '');
+
+                            $brandClass = match(true) {
+                                str_contains($brandName, 'toyota') => 'brand-toyota',
+                                str_contains($brandName, 'honda')  => 'brand-honda',
+                                str_contains($brandName, 'nissan') => 'brand-nissan',
+                                str_contains($brandName, 'bmw')    => 'brand-bmw',
+                                default                           => 'brand-default',
+                            };
+                        @endphp
+
+                        <tr>
+
+                            <!-- Receive No -->
+                            <td>
+                                <span class="receive-badge">
+                                    {{ $item->receive_no }}
+                                </span>
+                            </td>
+
+                            <!-- Customer -->
+                            <td>
+                                <div class="customer-cell">
+                                    <div class="cust-avatar {{ $avatarClass }}">
+                                        {{ $initials }}
+                                    </div>
+                                    <span class="cust-name">{{ $name }}</span>
+                                </div>
+                            </td>
+
+                            <!-- Contact -->
+                            <td>
+                                @php
+                                    $phones = [
+                                        'Owner'    => $item->customer->owner_phone ?? null,
+                                        'Transport'=> $item->customer->transport_phone ?? null,
+                                        'Driver'   => $item->customer->driver_phone ?? null,
+                                        'Office'   => $item->customer->office_phone ?? null,
+                                    ];
+
+                                    // remove empty values
+                                    $phones = array_filter($phones);
+                                    $count  = count($phones);
+                                @endphp
+
+                                <div class="contact-grid">
+
+                                    {{-- ✅ If only ONE number --}}
+                                    @if($count === 1)
+                                        <div class="contact-item">
+                                            📞 {{ array_values($phones)[0] }}
+                                        </div>
+                                    @endif
+
+                                    {{-- ✅ If MULTIPLE numbers --}}
+                                    @if($count > 1)
+                                        @foreach($phones as $label => $number)
+                                            <div class="contact-item">
+                                                <span class="contact-icon">📞</span>
+                                                <strong>{{ $label }}:</strong> {{ $number }}
+                                            </div>
+                                        @endforeach
+                                    @endif
+
+                                    {{-- ❌ No number --}}
+                                    @if($count === 0)
+                                        <span class="text-muted-cell">—</span>
+                                    @endif
+
+                                </div>
+                            </td>
+                            <!-- Brand & Model -->
+                            <td>
+                                <span class="brand-pill {{ $brandClass }}">
+                                    {{ optional($item->car->brand)->name ?? '—' }}
+                                </span>
+
+                                <div style="font-size: 11px; color: #71717A; margin-top: 3px;">
+                                    {{ optional($item->car->model)->name ?? '—' }}
+                                </div>
+                            </td>
+
+                            <!-- Registration -->
+                            <td>
+                                {{ optional($item->car)->registration_no ?? '—' }}
+                            </td>
+
+                            <!-- VIN -->
+                            <td>
+                                <span class="vin-text">
+                                    {{ optional($item->car)->vin ?? '—' }}
+                                </span>
+                            </td>
+
+                            <!-- Odometer -->
+                            <td>
+                                @if(optional($item->car)->odometer)
+                                    <span class="odo-text">
+                                        {{ number_format($item->car->odometer) }} km
+                                    </span>
+                                @else
+                                    <span class="text-muted-cell">—</span>
+                                @endif
+                            </td>
+
+                            <!-- Date -->
+                            <td>
+                                <span class="date-text">
+                                    {{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center" style="padding: 50px;">
+                                No car receive records found
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if($receives->hasPages())
+            <div class="cr-pagination">
+                <span>
+                    Showing {{ $receives->firstItem() }} to {{ $receives->lastItem() }} 
+                    of {{ $receives->total() }}
+                </span>
+
+                {{ $receives->withQueryString()->links() }}
+            </div>
+        @endif
+
+    </div>
 
 </div>
+
 @endsection
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    const customerEl = document.getElementById('customer_id');
-    const regEl      = document.getElementById('registration_no');
-
-    regEl.addEventListener('keyup', function () {
-
-        let reg        = this.value.trim();
-        let customerId = customerEl.value;
-
-        if (!customerId) {
-            console.warn('Customer select koro age');
-            return;
-        }
-
-        if (reg.length < 3) return;
-
-        axios.get('/car-receives/find-by-registration', {
-            params: {
-                customer_id: customerId,
-                registration_no: reg
-            }
-        })
-        .then(res => {
-
-            console.log('DATA:', res.data);
-
-            // ❌ data না থাকলে stop
-            if (!res.data) return;
-
-            let data = res.data;
-
-            // 🔥 VIN
-            document.getElementById('vin').value = data.vin ?? '';
-
-            // 🔥 ODOMETER
-            document.getElementById('odometer').value = data.odometer ?? '';
-
-            // 🔥 BRAND SELECT
-            let brandEl = document.getElementById('car_brand_id');
-            brandEl.value = data.car_brand_id;
-
-            // 🔥 MODEL SELECT
-            let modelEl = document.getElementById('car_model_id');
-            modelEl.value = data.car_model_id;
-
-        })
-        .catch(err => {
-            console.error('ERROR:', err);
-        });
-
-    });
-
-});
-</script>

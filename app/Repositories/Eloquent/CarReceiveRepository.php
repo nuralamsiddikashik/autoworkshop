@@ -63,4 +63,32 @@ class CarReceiveRepository implements CarReceiveRepositoryInterface {
                 return $db === $normalized;
             } );
     }
+
+    public function getList( array $filters = [] ) {
+        $query = CarReceive::with( [
+            'customer:id,customer_name,owner_phone,transport_phone,driver_phone,office_phone',
+
+            'car:id,customer_id,car_brand_id,car_model_id,registration_no,vin,odometer',
+
+            'car.brand:id,name',
+            'car.model:id,name',
+        ] );
+
+        // 🔍 Search
+        if ( !empty( $filters['search'] ) ) {
+            $search = $filters['search'];
+
+            $query->where( function ( $q ) use ( $search ) {
+                $q->where( 'receive_no', 'like', "%$search%" )
+                    ->orWhereHas( 'car', function ( $q2 ) use ( $search ) {
+                        $q2->where( 'registration_no', 'like', "%$search%" );
+                    } )
+                    ->orWhereHas( 'customer', function ( $q3 ) use ( $search ) {
+                        $q3->where( 'customer_name', 'like', "%$search%" );
+                    } );
+            } );
+        }
+
+        return $query->latest()->paginate( 10 );
+    }
 }

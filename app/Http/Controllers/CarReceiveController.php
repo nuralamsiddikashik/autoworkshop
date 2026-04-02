@@ -25,15 +25,22 @@ class CarReceiveController extends Controller {
         $this->customerRepo = $customerRepo;
         $this->brandRepo    = $brandRepo;
         $this->modelRepo    = $modelRepo;
+
     }
 
-    // ================= INDEX =================
     public function index() {
+        $receives = $this->repo->getList( request()->all() );
+
+        return view( 'admin.car-receives.index', compact( 'receives' ) );
+    }
+
+    // ================= CREATE =================
+    public function create() {
         $customers = $this->customerRepo->all();
         $brands    = $this->brandRepo->all();
         $models    = $this->modelRepo->all();
 
-        return view( 'admin.car-receives.index', compact( 'customers', 'brands', 'models' ) );
+        return view( 'admin.car-receives.create', compact( 'customers', 'brands', 'models' ) );
     }
 
     // ================= STORE =================

@@ -54,8 +54,9 @@ Route::prefix( 'car-receives' )->name( 'car-receives.' )->group( function () {
     Route::controller( CarReceiveController::class )->group( function () {
 
         // ================= MAIN =================
-        Route::get( '/', 'index' )->name( 'index' );
-        Route::post( '/', 'store' )->name( 'store' );
+        Route::get( '/index', 'index' )->name( 'index' );
+        Route::get( '/create', 'create' )->name( 'create' );
+        Route::post( '/store', 'store' )->name( 'store' );
 
         // ================= AJAX =================
         Route::get( '/customer/{id}', 'getCustomer' )->name( 'customer' );
