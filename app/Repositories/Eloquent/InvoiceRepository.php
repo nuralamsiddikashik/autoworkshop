@@ -6,124 +6,357 @@ use App\Repositories\Contracts\InvoiceRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 class InvoiceRepository implements InvoiceRepositoryInterface {
+    /*
+    |--------------------------------------------------------------------------
+    | Base Query
+    |--------------------------------------------------------------------------
+     */
+    public function query( array $relations = [] ) {
+        return Invoice::query()->with( $relations );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Find By ID (Flexible)
+    |--------------------------------------------------------------------------
+     */
+    public function findById( int $id, array $relations = [], array $columns = ['*'] ) {
+        return $this->query( $relations )
+            ->select( $columns )
+            ->findOrFail( $id );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get All (Index ব্যবহার করার জন্য)
+    |--------------------------------------------------------------------------
+     */
+    public function getAll( array $relations = [], int $paginate = 10 ) {
+        return $this->query( $relations )
+            ->latest()
+            ->paginate( $paginate );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create (Invoice Create)
+    |--------------------------------------------------------------------------
+     */
+    // public function create( array $data ) {
+    //     DB::beginTransaction();
+
+    //     try {
+
+    //         $invoice = Invoice::create( [
+    //             'job_card_id' => $data['job_card_id'],
+    //         ] );
+
+    //         $this->syncItems( $invoice, $data );
+
+    //         DB::commit();
+
+    //         return $invoice;
+
+    //     } catch ( \Exception $e ) {
+    //         DB::rollBack();
+    //         throw $e;
+    //     }
+    // }
 
     public function create( array $data ) {
-        return DB::transaction( function () use ( $data ) {
+        DB::beginTransaction();
 
-            $allItems = [];
+        try {
 
-            // 🔥 merge + filter
-            foreach ( ['parts', 'works', 'services'] as $section ) {
+            // 🔥 calculate totals
+            $parts_total   = 0;
+            $works_total   = 0;
+            $service_total = 0;
+            $total_profit  = 0;
 
-                if ( empty( $data[$section] ) ) {
-                    continue;
-                }
+            foreach ( $data['parts'] ?? [] as $item ) {
+                if ( !empty( $item['name'] ) ) {
+                    $qty        = $item['qty'] ?? 0;
+                    $unit_price = $item['unit_price'] ?? 0;
+                    $buy        = $item['buy_price'] ?? 0;
+                    $sell       = $item['sell_price'] ?? 0;
 
-                foreach ( $data[$section] as $item ) {
-
-                    if (
-                        empty( $item['name'] ) ||
-                        empty( $item['qty'] ) ||
-                        empty( $item['sell_price'] )
-                    ) {
-                        continue;
-                    }
-
-                    $type = rtrim( $section, 's' );
-
-                    $qty  = (float) $item['qty'];
-                    $buy  = (float) ( $item['buy_price'] ?? 0 );
-                    $sell = (float) $item['sell_price'];
-
-                    $total  = $qty * $sell;
-                    $profit = ( $sell - $buy ) * $qty;
-
-                    $allItems[] = [
-                        'type'       => $type,
-                        'name'       => $item['name'],
-                        'qty'        => $qty,
-                        'buy_price'  => $buy,
-                        'unit'       => $item['unit'] ?? null,
-                        'unit_price' => (float) ( $item['unit_price'] ?? 0 ),
-                        'sell_price' => $sell,
-                        'total'      => $total,
-                        'profit'     => $profit,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
+                    $parts_total += $qty * $unit_price;
+                    $total_profit += ( $sell - $buy ) * $qty;
                 }
             }
 
-            // ❗ validation
-            if ( empty( $allItems ) ) {
-                throw new \Exception( 'At least one item required' );
-            }
+            foreach ( $data['works'] ?? [] as $item ) {
+                if ( !empty( $item['name'] ) ) {
+                    $qty        = $item['qty'] ?? 0;
+                    $unit_price = $item['unit_price'] ?? 0;
+                    $buy        = $item['buy_price'] ?? 0;
+                    $sell       = $item['sell_price'] ?? 0;
 
-            // 🔥 totals (fast reduce)
-            $partsTotal   = 0;
-            $worksTotal   = 0;
-            $serviceTotal = 0;
-            $totalProfit  = 0;
-
-            foreach ( $allItems as $item ) {
-
-                if ( $item['type'] === 'part' ) {
-                    $partsTotal += $item['total'];
-                } elseif ( $item['type'] === 'work' ) {
-                    $worksTotal += $item['total'];
-                } else {
-                    $serviceTotal += $item['total'];
+                    $works_total += $qty * $unit_price;
+                    $total_profit += ( $sell - $buy ) * $qty;
                 }
-
-                $totalProfit += $item['profit'];
             }
 
-            $grandTotal = $partsTotal + $worksTotal + $serviceTotal;
-            $vat        = $grandTotal * 0.10;
-            $billAmount = $grandTotal + $vat;
+            foreach ( $data['services'] ?? [] as $item ) {
+                if ( !empty( $item['name'] ) ) {
+                    $qty        = $item['qty'] ?? 0;
+                    $unit_price = $item['unit_price'] ?? 0;
+                    $buy        = $item['buy_price'] ?? 0;
+                    $sell       = $item['sell_price'] ?? 0;
 
-            // 🔥 words
-            $billWords = numberToWords( $billAmount );
+                    $service_total += $qty * $unit_price;
+                    $total_profit += ( $sell - $buy ) * $qty;
+                }
+            }
 
-            // ✅ create invoice
+            $grand_total = $parts_total + $works_total + $service_total;
+            $vat         = 0; // চাইলে পরে add করো
+            $bill_amount = $grand_total + $vat;
+
+            // 🔥 create invoice
             $invoice = Invoice::create( [
-                'job_card_id'          => $data['job_card_id'],
-                'parts_total'          => $partsTotal,
-                'works_total'          => $worksTotal,
-                'service_total'        => $serviceTotal,
-                'grand_total'          => $grandTotal,
-                'vat'                  => $vat,
-                'bill_amount'          => $billAmount,
-                'total_profit'         => $totalProfit,
-                'bill_amount_in_words' => $billWords,
+                'job_card_id'   => $data['job_card_id'],
+                'parts_total'   => $parts_total,
+                'works_total'   => $works_total,
+                'service_total' => $service_total,
+                'grand_total'   => $grand_total,
+                'vat'           => $vat,
+                'bill_amount'   => $bill_amount,
+                'total_profit'  => $total_profit,
             ] );
 
-            // 🔥 BULK INSERT (VERY IMPORTANT 🚀)
-            foreach ( $allItems as &$item ) {
-                $item['invoice_id'] = $invoice->id;
-            }
+            // 🔥 items save
+            $this->syncItems( $invoice, $data );
 
-            DB::table( 'invoice_items' )->insert( $allItems );
+            DB::commit();
 
             return $invoice;
-        } );
+
+        } catch ( \Throwable $e ) {
+
+            DB::rollBack();
+            throw $e;
+        }
     }
 
-    public function getAll() {
-        return Invoice::with( [
-            'job.receive.customer',
-            'job.receive.car.brand',
-            'job.receive.car.model',
-        ] )->latest()->paginate( 10 );
+    /*
+    |--------------------------------------------------------------------------
+    | Update
+    |--------------------------------------------------------------------------
+     */
+    // public function update( int $id, array $data ) {
+    //     $invoice = $this->findById( $id );
+
+    //     DB::beginTransaction();
+
+    //     try {
+
+    //         $invoice->update( [
+    //             'job_card_id' => $data['job_card_id'],
+    //         ] );
+
+    //         $this->syncItems( $invoice, $data );
+
+    //         DB::commit();
+
+    //         return true;
+
+    //     } catch ( \Exception $e ) {
+    //         DB::rollBack();
+    //         throw $e;
+    //     }
+    // }
+
+    public function update( int $id, array $data ) {
+        DB::beginTransaction();
+
+        try {
+
+            $invoice = $this->findById( $id );
+
+            // 🔥 calculate totals
+            $parts_total   = 0;
+            $works_total   = 0;
+            $service_total = 0;
+            $total_profit  = 0;
+
+            foreach ( $data['parts'] ?? [] as $item ) {
+                if ( !empty( $item['name'] ) ) {
+                    $qty        = $item['qty'] ?? 0;
+                    $unit_price = $item['unit_price'] ?? 0;
+                    $buy        = $item['buy_price'] ?? 0;
+                    $sell       = $item['sell_price'] ?? 0;
+
+                    $parts_total += $qty * $unit_price;
+                    $total_profit += ( $sell - $buy ) * $qty;
+                }
+            }
+
+            foreach ( $data['works'] ?? [] as $item ) {
+                if ( !empty( $item['name'] ) ) {
+                    $qty        = $item['qty'] ?? 0;
+                    $unit_price = $item['unit_price'] ?? 0;
+                    $buy        = $item['buy_price'] ?? 0;
+                    $sell       = $item['sell_price'] ?? 0;
+
+                    $works_total += $qty * $unit_price;
+                    $total_profit += ( $sell - $buy ) * $qty;
+                }
+            }
+
+            foreach ( $data['services'] ?? [] as $item ) {
+                if ( !empty( $item['name'] ) ) {
+                    $qty        = $item['qty'] ?? 0;
+                    $unit_price = $item['unit_price'] ?? 0;
+                    $buy        = $item['buy_price'] ?? 0;
+                    $sell       = $item['sell_price'] ?? 0;
+
+                    $service_total += $qty * $unit_price;
+                    $total_profit += ( $sell - $buy ) * $qty;
+                }
+            }
+
+            $grand_total = $parts_total + $works_total + $service_total;
+            $vat         = 0;
+            $bill_amount = $grand_total + $vat;
+
+            // 🔥 UPDATE invoice
+            $invoice->update( [
+                'job_card_id'   => $data['job_card_id'],
+                'parts_total'   => $parts_total,
+                'works_total'   => $works_total,
+                'service_total' => $service_total,
+                'grand_total'   => $grand_total,
+                'vat'           => $vat,
+                'bill_amount'   => $bill_amount,
+                'total_profit'  => $total_profit,
+            ] );
+
+            // 🔥 update items
+            $this->syncItems( $invoice, $data );
+
+            DB::commit();
+
+            return true;
+
+        } catch ( \Throwable $e ) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
-    public function findById( int $id ) {
-        return Invoice::with( [
-            'items',
-            'job.receive.customer',
-            'job.receive.car.brand',
-            'job.receive.car.model',
-        ] )->findOrFail( $id );
+    /*
+    |--------------------------------------------------------------------------
+    | Delete
+    |--------------------------------------------------------------------------
+     */
+    public function delete( int $id ) {
+        $invoice = $this->findById( $id );
+
+        DB::beginTransaction();
+
+        try {
+
+            $invoice->parts()->delete();
+            $invoice->works()->delete();
+            $invoice->services()->delete();
+
+            $invoice->delete();
+
+            DB::commit();
+
+            return true;
+
+        } catch ( \Exception $e ) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sync Items (🔥 MAIN MAGIC)
+    |--------------------------------------------------------------------------
+     */
+    private function syncItems( $invoice, array $data ) {
+        $invoice->items()->delete();
+
+        foreach ( $data['parts'] ?? [] as $item ) {
+            if ( !empty( $item['name'] ) ) {
+
+                $qty        = $item['qty'] ?? 0;
+                $buy        = $item['buy_price'] ?? 0;
+                $unit_price = $item['unit_price'] ?? 0;
+                $sell       = $item['sell_price'] ?? 0;
+
+                $total  = $qty * $unit_price;
+                $profit = ( $sell - $buy ) * $qty; // 🔥 FIX
+
+                $invoice->items()->create( [
+                    'type'       => 'part',
+                    'name'       => $item['name'],
+                    'qty'        => $qty,
+                    'buy_price'  => $buy,
+                    'unit'       => $item['unit'] ?? null,
+                    'unit_price' => $unit_price,
+                    'sell_price' => $sell,
+                    'total'      => $total,
+                    'profit'     => $profit, // 🔥 MUST
+                ] );
+            }
+        }
+
+        // works
+        foreach ( $data['works'] ?? [] as $item ) {
+            if ( !empty( $item['name'] ) ) {
+
+                $qty        = $item['qty'] ?? 0;
+                $buy        = $item['buy_price'] ?? 0;
+                $unit_price = $item['unit_price'] ?? 0;
+                $sell       = $item['sell_price'] ?? 0;
+
+                $total  = $qty * $unit_price;
+                $profit = ( $sell - $buy ) * $qty;
+
+                $invoice->items()->create( [
+                    'type'       => 'work',
+                    'name'       => $item['name'],
+                    'qty'        => $qty,
+                    'buy_price'  => $buy,
+                    'unit'       => $item['unit'] ?? null,
+                    'unit_price' => $unit_price,
+                    'sell_price' => $sell,
+                    'total'      => $total,
+                    'profit'     => $profit,
+                ] );
+            }
+        }
+
+        // services
+        foreach ( $data['services'] ?? [] as $item ) {
+            if ( !empty( $item['name'] ) ) {
+
+                $qty        = $item['qty'] ?? 0;
+                $buy        = $item['buy_price'] ?? 0;
+                $unit_price = $item['unit_price'] ?? 0;
+                $sell       = $item['sell_price'] ?? 0;
+
+                $total  = $qty * $unit_price;
+                $profit = ( $sell - $buy ) * $qty;
+
+                $invoice->items()->create( [
+                    'type'       => 'service',
+                    'name'       => $item['name'],
+                    'qty'        => $qty,
+                    'buy_price'  => $buy,
+                    'unit'       => $item['unit'] ?? null,
+                    'unit_price' => $unit_price,
+                    'sell_price' => $sell,
+                    'total'      => $total,
+                    'profit'     => $profit,
+                ] );
+            }
+        }
+    }
 }

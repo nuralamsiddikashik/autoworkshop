@@ -15,7 +15,20 @@ class Invoice extends Model {
         return $this->hasMany( InvoiceItem::class );
     }
 
+    public function parts() {
+        return $this->items()->where( 'type', 'part' );
+    }
+
+    public function works() {
+        return $this->items()->where( 'type', 'work' );
+    }
+
+    public function services() {
+        return $this->items()->where( 'type', 'service' );
+    }
+
     public function job() {
         return $this->belongsTo( JobCard::class, 'job_card_id' );
     }
+
 }

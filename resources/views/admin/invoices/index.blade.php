@@ -173,6 +173,11 @@
                                 👁 View
                             </a>
                         </td>
+                        <td style="text-align: center;">
+                            <a href="{{ route('invoices.edit', $inv->id) }}" class="btn-edit">
+                                ✏ Edit
+                            </a>
+                        </td>
                     </tr>
                 @empty
                     <tr>

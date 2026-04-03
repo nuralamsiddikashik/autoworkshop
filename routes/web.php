@@ -94,6 +94,13 @@ Route::prefix( 'invoices' )->name( 'invoices.' )->controller( InvoiceController:
         // Store
         Route::post( '/store', 'store' )->name( 'store' );
 
+        // Edit Page
+        Route::get( '/edit/{id}', 'edit' )->name( 'edit' );
+        Route::put( '/update/{id}', 'update' )->name( 'update' );
+
+        // Delete
+        Route::delete( '/delete/{id}', 'destroy' )->name( 'delete' );
+
         // 🔥 Job No Auto Fetch
         Route::get( '/find-job', 'find' )->name( 'find' );
 

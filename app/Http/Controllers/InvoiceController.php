@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Invoice\StoreInvoiceRequest;
+use App\Http\Requests\Invoice\UpdateInvoiceRequest;
 use App\Repositories\Contracts\InvoiceRepositoryInterface;
 use App\Repositories\Contracts\JobCardRepositoryInterface;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -20,25 +21,47 @@ class InvoiceController extends Controller {
         $this->jobRepo = $jobRepo;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Index
+    |--------------------------------------------------------------------------
+     */
     public function index() {
-        $invoices = $this->repo->getAll();
+        $invoices = $this->repo->getAll(); // light query
 
         return view( 'admin.invoices.index', compact( 'invoices' ) );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Show
+    |--------------------------------------------------------------------------
+     */
     public function show( $id ) {
-        $invoice = $this->repo->findById( $id );
+        $invoice = $this->repo->findById( $id, [
+            'items',
+            'job.receive.customer',
+        ] );
 
         return view( 'admin.invoices.show', compact( 'invoice' ) );
     }
 
-    // ✅ Create Page
+    /*
+    |--------------------------------------------------------------------------
+    | Create
+    |--------------------------------------------------------------------------
+     */
     public function create() {
         $units = config( 'invoice.units' );
+
         return view( 'admin.invoices.create', compact( 'units' ) );
     }
 
-    // ✅ Store Invoice
+    /*
+    |--------------------------------------------------------------------------
+    | Store
+    |--------------------------------------------------------------------------
+     */
     public function store( StoreInvoiceRequest $request ) {
         try {
 
@@ -47,8 +70,9 @@ class InvoiceController extends Controller {
             return back()->with( 'success', '✅ Invoice Created Successfully' );
 
         } catch ( \Throwable $e ) {
+            dd( $e->getMessage() ); // 🔥 real error দেখাবে
 
-            report( $e ); // 🔥 log error
+            report( $e );
 
             return back()->withErrors( [
                 'error' => '⚠️ Something went wrong, please try again!',
@@ -56,7 +80,89 @@ class InvoiceController extends Controller {
         }
     }
 
-    // ✅ Job No → Fetch
+    /*
+    |--------------------------------------------------------------------------
+    | Edit
+    |--------------------------------------------------------------------------
+     */
+    public function edit( $id ) {
+        $invoice = $this->repo->findById( $id, [
+            'parts',
+            'works',
+            'services',
+        ] );
+
+        return view( 'admin.invoices.edit', compact( 'invoice' ) );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update
+    |--------------------------------------------------------------------------
+     */
+    // public function update( UpdateInvoiceRequest $request, $id ) {
+    //     try {
+
+    //         $this->repo->update( $id, $request->validated() );
+
+    //         return redirect()
+    //             ->route( 'invoices.index' )
+    //             ->with( 'success', '✅ Invoice Updated Successfully' );
+
+    //     } catch ( \Throwable $e ) {
+    //         dd( $e->getMessage() ); // 🔥 real error দেখাবে
+
+    //         report( $e );
+
+    //         return back()->withErrors( [
+    //             'error' => '⚠️ Update failed!',
+    //         ] )->withInput();
+    //     }
+    // }
+
+    public function update( UpdateInvoiceRequest $request, $id ) {
+        try {
+
+            $this->repo->update( $id, $request->validated() );
+
+            return redirect()->route( 'invoices.index' )
+                ->with( 'success', 'Invoice Updated' );
+
+        } catch ( \Throwable $e ) {
+
+            return back()->withErrors( [
+                'error' => $e->getMessage(),
+            ] );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delete (optional)
+    |--------------------------------------------------------------------------
+     */
+    public function destroy( $id ) {
+        try {
+
+            $this->repo->delete( $id );
+
+            return back()->with( 'success', '✅ Invoice Deleted' );
+
+        } catch ( \Throwable $e ) {
+
+            report( $e );
+
+            return back()->withErrors( [
+                'error' => '⚠️ Delete failed!',
+            ] );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Job No → Fetch (AJAX)
+    |--------------------------------------------------------------------------
+     */
     public function find( Request $request ) {
         $job = $this->jobRepo->findByJobNo( $request->job_no );
 
@@ -67,20 +173,24 @@ class InvoiceController extends Controller {
         return response()->json( $job );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | PDF
+    |--------------------------------------------------------------------------
+     */
     public function pdf( $id ) {
-        $invoice = $this->repo->findById( $id );
+        $invoice = $this->repo->findById( $id, [
+            'items',
+            'job.receive.customer',
+            'job.receive.car.brand',
+            'job.receive.car.model',
+        ] );
 
         $pdf = Pdf::loadView( 'admin.invoices.pdf', compact( 'invoice' ) )
             ->setPaper( 'a4', 'portrait' );
 
-        $action = request( 'action' );
-
-        // 🔥 Download
-        if ( $action === 'download' ) {
-            return $pdf->download( 'invoice-' . $invoice->id . '.pdf' );
-        }
-
-        // 🔥 Default = View (Stream)
-        return $pdf->stream( 'invoice-' . $invoice->id . '.pdf' );
+        return request( 'action' ) === 'download'
+        ? $pdf->download( 'invoice-' . $invoice->id . '.pdf' )
+        : $pdf->stream( 'invoice-' . $invoice->id . '.pdf' );
     }
 }
