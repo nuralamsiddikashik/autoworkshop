@@ -42,26 +42,6 @@ class InvoiceRepository implements InvoiceRepositoryInterface {
     | Create (Invoice Create)
     |--------------------------------------------------------------------------
      */
-    // public function create( array $data ) {
-    //     DB::beginTransaction();
-
-    //     try {
-
-    //         $invoice = Invoice::create( [
-    //             'job_card_id' => $data['job_card_id'],
-    //         ] );
-
-    //         $this->syncItems( $invoice, $data );
-
-    //         DB::commit();
-
-    //         return $invoice;
-
-    //     } catch ( \Exception $e ) {
-    //         DB::rollBack();
-    //         throw $e;
-    //     }
-    // }
 
     public function create( array $data ) {
         DB::beginTransaction();
@@ -111,7 +91,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface {
             }
 
             $grand_total = $parts_total + $works_total + $service_total;
-            $vat         = 0; // চাইলে পরে add করো
+            $vat         = $data['vat'] ?? 0;
             $bill_amount = $grand_total + $vat;
 
             // 🔥 create invoice
@@ -145,28 +125,6 @@ class InvoiceRepository implements InvoiceRepositoryInterface {
     | Update
     |--------------------------------------------------------------------------
      */
-    // public function update( int $id, array $data ) {
-    //     $invoice = $this->findById( $id );
-
-    //     DB::beginTransaction();
-
-    //     try {
-
-    //         $invoice->update( [
-    //             'job_card_id' => $data['job_card_id'],
-    //         ] );
-
-    //         $this->syncItems( $invoice, $data );
-
-    //         DB::commit();
-
-    //         return true;
-
-    //     } catch ( \Exception $e ) {
-    //         DB::rollBack();
-    //         throw $e;
-    //     }
-    // }
 
     public function update( int $id, array $data ) {
         DB::beginTransaction();
@@ -218,7 +176,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface {
             }
 
             $grand_total = $parts_total + $works_total + $service_total;
-            $vat         = 0;
+            $vat         = $data['vat'] ?? 0;
             $bill_amount = $grand_total + $vat;
 
             // 🔥 UPDATE invoice

@@ -152,7 +152,21 @@
 
         <button type="button" onclick="addRow('services')">+ Add Service</button>
 
+      
         <br><br>
+
+        <div style="border-top:1px solid #ddd; padding-top:15px;">
+            <h5>Summary</h5>
+
+            <p>Subtotal: <span id="grand_total">0.00</span></p>
+            <p>VAT (10%): <span id="vat">0.00</span></p>
+            <p><strong>Total: <span id="bill_amount">0.00</span></strong></p>
+        </div>
+
+        {{-- 🔥 hidden inputs --}}
+        <input type="hidden" name="vat" id="vat_input">
+        <input type="hidden" name="grand_total" id="grand_total_input">
+        <input type="hidden" name="bill_amount" id="bill_amount_input">
 
         <button type="submit" class="btn btn-primary">Update Invoice</button>
     </form>
@@ -190,6 +204,36 @@ function addRow(type) {
 
     table.insertAdjacentHTML('beforeend', row);
 }
+
+function calculate() {
+    let total = 0;
+
+    document.querySelectorAll('tbody tr').forEach(row => {
+        let qty = Number(row.querySelector('input[name*="[qty]"]')?.value || 0);
+        let price = Number(row.querySelector('input[name*="[unit_price]"]')?.value || 0);
+
+        total += qty * price;
+    });
+
+    let vat = total * 0.10;
+    let bill = total + vat;
+
+    // UI update
+    document.getElementById('grand_total').textContent = total.toFixed(2);
+    document.getElementById('vat').textContent = vat.toFixed(2);
+    document.getElementById('bill_amount').textContent = bill.toFixed(2);
+
+    // hidden input update
+    document.getElementById('grand_total_input').value = total;
+    document.getElementById('vat_input').value = vat;
+    document.getElementById('bill_amount_input').value = bill;
+}
+
+// 🔥 auto trigger
+document.addEventListener('input', calculate);
+
+// 🔥 page load এ run করো
+window.addEventListener('load', calculate);
 
 function removeRow(btn) {
     btn.closest('tr').remove();

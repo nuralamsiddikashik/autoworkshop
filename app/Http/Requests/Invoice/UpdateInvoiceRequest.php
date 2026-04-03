@@ -18,6 +18,9 @@ class UpdateInvoiceRequest extends FormRequest {
         return [
 
             'job_card_id'           => 'required|exists:job_cards,id',
+            'vat'                   => 'nullable|numeric',
+            'grand_total'           => 'nullable|numeric',
+            'bill_amount'           => 'nullable|numeric',
 
             /*
             |--------------------------------------------------------------------------

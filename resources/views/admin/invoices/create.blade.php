@@ -549,6 +549,12 @@ table.inv-table tbody tr:hover td {
                 <span class="footer-stat-value highlight" id="bill_amount">0.00</span>
             </div>
         </div>
+
+        {{-- 🔥 IMPORTANT: Hidden Inputs (ADD THIS) --}}
+        <input type="hidden" name="grand_total" id="grand_total_input">
+        <input type="hidden" name="vat" id="vat_input">
+        <input type="hidden" name="bill_amount" id="bill_amount_input">
+
         <div class="footer-actions">
             <a href="{{ route('invoices.index') }}" class="btn-cancel">Cancel</a>
             <button type="submit" class="btn-save">Save Invoice</button>
@@ -692,13 +698,23 @@ document.getElementById('job_no').addEventListener('blur', function () {
 
 function calculate() {
     let total = 0;
+
     document.querySelectorAll('.total').forEach(e => {
         total += Number(e.value || 0);
     });
+
     const vat = total * 0.10;
-    document.getElementById('grand_total').textContent  = total.toFixed(2);
-    document.getElementById('vat').textContent          = vat.toFixed(2);
-    document.getElementById('bill_amount').textContent  = (total + vat).toFixed(2);
+    const bill = total + vat;
+
+    // UI update
+    document.getElementById('grand_total').textContent = total.toFixed(2);
+    document.getElementById('vat').textContent = vat.toFixed(2);
+    document.getElementById('bill_amount').textContent = bill.toFixed(2);
+
+    // 🔥 hidden input update (THIS WAS MISSING)
+    document.getElementById('grand_total_input').value = total;
+    document.getElementById('vat_input').value = vat;
+    document.getElementById('bill_amount_input').value = bill;
 }
 
 window.onload = () => addRow('parts');

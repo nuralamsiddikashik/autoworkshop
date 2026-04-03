@@ -63,6 +63,7 @@ class InvoiceController extends Controller {
     |--------------------------------------------------------------------------
      */
     public function store( StoreInvoiceRequest $request ) {
+
         try {
 
             $this->repo->create( $request->validated() );
@@ -70,7 +71,6 @@ class InvoiceController extends Controller {
             return back()->with( 'success', '✅ Invoice Created Successfully' );
 
         } catch ( \Throwable $e ) {
-            dd( $e->getMessage() ); // 🔥 real error দেখাবে
 
             report( $e );
 
@@ -100,27 +100,9 @@ class InvoiceController extends Controller {
     | Update
     |--------------------------------------------------------------------------
      */
-    // public function update( UpdateInvoiceRequest $request, $id ) {
-    //     try {
-
-    //         $this->repo->update( $id, $request->validated() );
-
-    //         return redirect()
-    //             ->route( 'invoices.index' )
-    //             ->with( 'success', '✅ Invoice Updated Successfully' );
-
-    //     } catch ( \Throwable $e ) {
-    //         dd( $e->getMessage() ); // 🔥 real error দেখাবে
-
-    //         report( $e );
-
-    //         return back()->withErrors( [
-    //             'error' => '⚠️ Update failed!',
-    //         ] )->withInput();
-    //     }
-    // }
 
     public function update( UpdateInvoiceRequest $request, $id ) {
+
         try {
 
             $this->repo->update( $id, $request->validated() );

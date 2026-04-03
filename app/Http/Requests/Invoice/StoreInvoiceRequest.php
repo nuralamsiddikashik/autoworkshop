@@ -13,6 +13,11 @@ class StoreInvoiceRequest extends FormRequest {
         return [
             'job_card_id'           => 'required|exists:job_cards,id',
 
+            // 🔥 ADD THESE (MOST IMPORTANT)
+            'vat'                   => 'nullable|numeric',
+            'grand_total'           => 'nullable|numeric',
+            'bill_amount'           => 'nullable|numeric',
+
             'parts'                 => 'nullable|array',
             'parts.*.name'          => 'nullable|string',
             'parts.*.qty'           => 'nullable|numeric',
