@@ -16,16 +16,25 @@ class StoreInvoiceRequest extends FormRequest {
             'parts'                 => 'nullable|array',
             'parts.*.name'          => 'nullable|string',
             'parts.*.qty'           => 'nullable|numeric',
+            'parts.*.buy_price'     => 'nullable|numeric',
+            'parts.*.unit'          => 'nullable|string',
+            'parts.*.unit_price'    => 'nullable|numeric',
             'parts.*.sell_price'    => 'nullable|numeric',
 
             'works'                 => 'nullable|array',
             'works.*.name'          => 'nullable|string',
             'works.*.qty'           => 'nullable|numeric',
+            'works.*.buy_price'     => 'nullable|numeric',
+            'works.*.unit'          => 'nullable|string',
+            'works.*.unit_price'    => 'nullable|numeric',
             'works.*.sell_price'    => 'nullable|numeric',
 
             'services'              => 'nullable|array',
             'services.*.name'       => 'nullable|string',
             'services.*.qty'        => 'nullable|numeric',
+            'services.*.buy_price'  => 'nullable|numeric',
+            'services.*.unit'       => 'nullable|string',
+            'services.*.unit_price' => 'nullable|numeric',
             'services.*.sell_price' => 'nullable|numeric',
         ];
     }

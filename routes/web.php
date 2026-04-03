@@ -85,9 +85,7 @@ Route::prefix( 'job-cards' )->name( 'job-cards.' )->group( function () {
     } );
 } );
 
-Route::prefix( 'invoices' )
-    ->name( 'invoices.' )
-    ->controller( InvoiceController::class )
+Route::prefix( 'invoices' )->name( 'invoices.' )->controller( InvoiceController::class )
     ->group( function () {
 
         // Create Page
@@ -98,4 +96,9 @@ Route::prefix( 'invoices' )
 
         // 🔥 Job No Auto Fetch
         Route::get( '/find-job', 'find' )->name( 'find' );
+
+        Route::get( '/', 'index' )->name( 'index' );
+        Route::get( '/show/{id}', 'show' )->name( 'show' );
+        Route::get( '/pdf/{id}', 'pdf' )
+            ->name( 'pdf' );
     } );

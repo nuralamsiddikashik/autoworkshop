@@ -70,6 +70,13 @@
       <i class="fas fa-file nav-icon"></i>
       <span class="nav-label">Invoices Create</span>
     </a>
+
+    <a href="{{ route('invoices.index') }}" class="nav-item {{ request()->routeIs('invoices.index') ? 'active' : '' }}">
+      <i class="fas fa-file nav-icon"></i>
+      <span class="nav-label">Invoices List</span>
+    </a>
+
+    
       
   </div>
 </div>
