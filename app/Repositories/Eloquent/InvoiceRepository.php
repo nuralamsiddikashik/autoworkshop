@@ -43,6 +43,83 @@ class InvoiceRepository implements InvoiceRepositoryInterface {
     |--------------------------------------------------------------------------
      */
 
+    // public function create( array $data ) {
+    //     DB::beginTransaction();
+
+    //     try {
+
+    //         // 🔥 calculate totals
+    //         $parts_total   = 0;
+    //         $works_total   = 0;
+    //         $service_total = 0;
+    //         $total_profit  = 0;
+
+    //         foreach ( $data['parts'] ?? [] as $item ) {
+    //             if ( !empty( $item['name'] ) ) {
+    //                 $qty        = $item['qty'] ?? 0;
+    //                 $unit_price = $item['unit_price'] ?? 0;
+    //                 $buy        = $item['buy_price'] ?? 0;
+    //                 $sell       = $item['sell_price'] ?? 0;
+
+    //                 $parts_total += $qty * $unit_price;
+    //                 $total_profit += ( $sell - $buy ) * $qty;
+    //             }
+    //         }
+
+    //         foreach ( $data['works'] ?? [] as $item ) {
+    //             if ( !empty( $item['name'] ) ) {
+    //                 $qty        = $item['qty'] ?? 0;
+    //                 $unit_price = $item['unit_price'] ?? 0;
+    //                 $buy        = $item['buy_price'] ?? 0;
+    //                 $sell       = $item['sell_price'] ?? 0;
+
+    //                 $works_total += $qty * $unit_price;
+    //                 $total_profit += ( $sell - $buy ) * $qty;
+    //             }
+    //         }
+
+    //         foreach ( $data['services'] ?? [] as $item ) {
+    //             if ( !empty( $item['name'] ) ) {
+    //                 $qty        = $item['qty'] ?? 0;
+    //                 $unit_price = $item['unit_price'] ?? 0;
+    //                 $buy        = $item['buy_price'] ?? 0;
+    //                 $sell       = $item['sell_price'] ?? 0;
+
+    //                 $service_total += $qty * $unit_price;
+    //                 $total_profit += ( $sell - $buy ) * $qty;
+    //             }
+    //         }
+
+    //         $grand_total = $parts_total + $works_total + $service_total;
+    //         $vat         = $data['vat'] ?? 0;
+    //         $bill_amount = $grand_total + $vat;
+
+    //         // 🔥 create invoice
+    //         $invoice = Invoice::create( [
+    //             'job_card_id'   => $data['job_card_id'],
+    //             'parts_total'   => $parts_total,
+    //             'works_total'   => $works_total,
+    //             'service_total' => $service_total,
+    //             'grand_total'   => $grand_total,
+    //             'vat'           => $vat,
+    //             'bill_amount'   => $bill_amount,
+    //             'total_profit'  => $total_profit,
+    //         ] );
+
+    //         // 🔥 items save
+    //         $this->syncItems( $invoice, $data );
+
+    //         DB::commit();
+
+    //         return $invoice;
+
+    //     } catch ( \Throwable $e ) {
+
+    //         DB::rollBack();
+    //         throw $e;
+    //     }
+    // }
+
     public function create( array $data ) {
         DB::beginTransaction();
 
@@ -94,7 +171,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface {
             $vat         = $data['vat'] ?? 0;
             $bill_amount = $grand_total + $vat;
 
-            // 🔥 create invoice
+            // ✅ 🔥 FIXED PART (IMPORTANT)
             $invoice = Invoice::create( [
                 'job_card_id'   => $data['job_card_id'],
                 'parts_total'   => $parts_total,
@@ -104,6 +181,11 @@ class InvoiceRepository implements InvoiceRepositoryInterface {
                 'vat'           => $vat,
                 'bill_amount'   => $bill_amount,
                 'total_profit'  => $total_profit,
+
+                // 🔥 ADD THESE (CRITICAL)
+                'paid_amount'   => 0,
+                'due_amount'    => $bill_amount,
+                'status'        => 'unpaid',
             ] );
 
             // 🔥 items save
@@ -174,12 +256,26 @@ class InvoiceRepository implements InvoiceRepositoryInterface {
                     $total_profit += ( $sell - $buy ) * $qty;
                 }
             }
-
             $grand_total = $parts_total + $works_total + $service_total;
             $vat         = $data['vat'] ?? 0;
             $bill_amount = $grand_total + $vat;
 
-            // 🔥 UPDATE invoice
+// 🔥 IMPORTANT
+            $invoice->refresh();
+
+            $paid = $invoice->paid_amount;
+
+            $newDue = max( 0, $bill_amount - $paid );
+
+// 🔥 status logic
+            $status = 'unpaid';
+
+            if ( $newDue == 0 ) {
+                $status = 'paid';
+            } elseif ( $paid > 0 ) {
+                $status = 'partial';
+            }
+
             $invoice->update( [
                 'job_card_id'   => $data['job_card_id'],
                 'parts_total'   => $parts_total,
@@ -189,6 +285,9 @@ class InvoiceRepository implements InvoiceRepositoryInterface {
                 'vat'           => $vat,
                 'bill_amount'   => $bill_amount,
                 'total_profit'  => $total_profit,
+
+                'due_amount'    => $newDue,
+                'status'        => $status,
             ] );
 
             // 🔥 update items

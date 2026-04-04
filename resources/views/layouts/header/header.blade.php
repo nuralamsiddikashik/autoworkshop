@@ -76,8 +76,11 @@
       <span class="nav-label">Invoices List</span>
     </a>
 
-    
-      
+    <a href="{{ route('money.receipts.create') }}" class="nav-item {{ request()->routeIs('money.receipts.create') ? 'active' : '' }}">
+      <i class="fas fa-file nav-icon"></i>
+      <span class="nav-label">Money Receipts Create</span>
+    </a>
+
   </div>
 </div>
 

@@ -145,5 +145,7 @@ select.inp{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.
 </div>
 
 
+@yield('scripts')
+
 </body>
 </html>

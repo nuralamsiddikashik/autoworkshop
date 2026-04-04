@@ -586,28 +586,38 @@ table.summary-table tr.pay-row td { color: #555; }
             </div>
         </div>
 
-        <table class="summary-table">
-            <tr>
-                <td>Total Tk.</td>
-                <td>{{ number_format($invoice->parts_total + $invoice->works_total + ($invoice->service_total ?? 0), 2) }}</td>
-            </tr>
-            <tr>
-                <td>VAT Total (10%)</td>
-                <td>{{ number_format($invoice->vat, 2) }}</td>
-            </tr>
-            <tr>
-                <td style="font-weight:600;">Bill Amount</td>
-                <td>{{ number_format($invoice->bill_amount, 2) }}</td>
-            </tr>
-            <tr class="pay-row">
-                <td>Pay</td>
-                <td>{{ number_format($invoice->paid ?? 0, 2) }}</td>
-            </tr>
-            <tr class="total-due">
-                <td>Due Amount</td>
-                <td>{{ number_format($invoice->due_amount ?? $invoice->bill_amount, 2) }}</td>
-            </tr>
-        </table>
+<table class="summary-table">
+    <tr>
+        <td>Total Tk.</td>
+        <td>{{ number_format($invoice->parts_total + $invoice->works_total + ($invoice->service_total ?? 0), 2) }}</td>
+    </tr>
+
+    <tr>
+        <td>VAT Total (10%)</td>
+        <td>{{ number_format($invoice->vat, 2) }}</td>
+    </tr>
+
+    <tr>
+        <td style="font-weight:600;">Bill Amount</td>
+        <td>{{ number_format($invoice->bill_amount, 2) }}</td>
+    </tr>
+
+    {{-- 🔥 NEW --}}
+    <tr>
+        <td>Discount</td>
+        <td>{{ number_format($invoice->paymentDetails->sum('discount_amount'), 2) }}</td>
+    </tr>
+
+    <tr class="pay-row">
+        <td>Paid</td>
+        <td>{{ number_format($invoice->paid_amount ?? 0, 2) }}</td>
+    </tr>
+
+    <tr class="total-due">
+        <td>Due Amount</td>
+        <td>{{ number_format($invoice->due_amount ?? $invoice->bill_amount, 2) }}</td>
+    </tr>
+</table>
 
     </div>
 

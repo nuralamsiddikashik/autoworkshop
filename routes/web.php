@@ -7,6 +7,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JobCardController;
+use App\Http\Controllers\MoneyReceiptController;
 use Illuminate\Support\Facades\Route;
 
 Route::get( '/', [DashboardController::class, 'index'] )->name( 'dashboard' );
@@ -108,4 +109,18 @@ Route::prefix( 'invoices' )->name( 'invoices.' )->controller( InvoiceController:
         Route::get( '/show/{id}', 'show' )->name( 'show' );
         Route::get( '/pdf/{id}', 'pdf' )
             ->name( 'pdf' );
+    } );
+
+Route::prefix( 'money-receipts' )
+    ->controller( MoneyReceiptController::class )
+    ->group( function () {
+
+        Route::get( '/', 'index' )->name( 'money.receipts.index' );
+
+        Route::get( '/create', 'create' )->name( 'money.receipts.create' );
+
+        Route::post( '/', 'store' )->name( 'money.receipts.store' );
+
+        Route::get( '/customer/{id}/due-invoices', 'getCustomerDueInvoices' )
+            ->name( 'money.receipts.customer.due.invoices' );
     } );

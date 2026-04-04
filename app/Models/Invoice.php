@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\InvoiceItem;
+use App\Models\JobCard;
+use App\Models\PaymentDetail;
 use Illuminate\Database\Eloquent\Model;
 
 class Invoice extends Model {
     protected $fillable = [
         'job_card_id',
         'parts_total', 'works_total', 'service_total',
-        'grand_total', 'vat', 'bill_amount', 'total_profit',
+        'grand_total', 'vat', 'bill_amount', 'total_profit', 'paid_amount',
+        'due_amount',
+        'status',
     ];
 
     public function items() {
@@ -29,6 +34,10 @@ class Invoice extends Model {
 
     public function job() {
         return $this->belongsTo( JobCard::class, 'job_card_id' );
+    }
+
+    public function paymentDetails() {
+        return $this->hasMany( PaymentDetail::class );
     }
 
 }

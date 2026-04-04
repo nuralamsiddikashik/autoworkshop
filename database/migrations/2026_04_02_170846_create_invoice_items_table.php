@@ -26,6 +26,7 @@ return new class extends Migration {
 
             $table->decimal( 'total', 10, 2 );
             $table->decimal( 'profit', 10, 2 );
+            
 
             $table->timestamps();
         } );

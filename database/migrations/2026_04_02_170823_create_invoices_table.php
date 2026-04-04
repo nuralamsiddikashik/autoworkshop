@@ -22,6 +22,10 @@ return new class extends Migration {
             $table->decimal( 'vat', 10, 2 );
             $table->decimal( 'bill_amount', 10, 2 );
             $table->decimal( 'total_profit', 10, 2 )->default( 0 );
+            $table->decimal( 'paid_amount', 12, 2 )->default( 0 );
+            $table->decimal( 'due_amount', 12, 2 )->default( 0 );
+            $table->enum( 'status', ['unpaid', 'partial', 'paid'] )
+                ->default( 'unpaid' );
 
             $table->timestamps();
         } );

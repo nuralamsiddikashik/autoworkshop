@@ -8,12 +8,14 @@ use App\Repositories\Contracts\CarReceiveRepositoryInterface;
 use App\Repositories\Contracts\CustomerRepositoryInterface;
 use App\Repositories\Contracts\InvoiceRepositoryInterface;
 use App\Repositories\Contracts\JobCardRepositoryInterface;
+use App\Repositories\Contracts\MoneyReceiptRepositoryInterface;
 use App\Repositories\Eloquent\CarBrandRepository;
 use App\Repositories\Eloquent\CarModelRepository;
 use App\Repositories\Eloquent\CarReceiveRepository;
 use App\Repositories\Eloquent\CustomerRepository;
 use App\Repositories\Eloquent\InvoiceRepository;
 use App\Repositories\Eloquent\JobCardRepository;
+use App\Repositories\Eloquent\MoneyReceiptRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider {
@@ -30,6 +32,11 @@ class AppServiceProvider extends ServiceProvider {
             InvoiceRepositoryInterface::class,
             InvoiceRepository::class
         );
+        $this->app->bind(
+            MoneyReceiptRepositoryInterface::class,
+            MoneyReceiptRepository::class
+        );
+
     }
 
     /**
