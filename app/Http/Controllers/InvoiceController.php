@@ -168,11 +168,17 @@ class InvoiceController extends Controller {
             'job.receive.car.model',
         ] );
 
-        $pdf = Pdf::loadView( 'admin.invoices.pdf', compact( 'invoice' ) )
+        $showHeader = request( 'header', 'true' ) !== 'false';
+
+        $pdf = Pdf::loadView( 'admin.invoices.pdf', [
+            'invoice'    => $invoice,
+            'showHeader' => $showHeader,
+        ] )
             ->setPaper( 'a4', 'portrait' );
 
         return request( 'action' ) === 'download'
         ? $pdf->download( 'invoice-' . $invoice->id . '.pdf' )
         : $pdf->stream( 'invoice-' . $invoice->id . '.pdf' );
     }
+
 }

@@ -357,10 +357,23 @@ table.summary-table tr.pay-row td { color: #555; }
 
 {{-- Action Buttons --}}
 <div class="action-bar">
-    <a href="{{ route('invoices.index') }}" class="btn-inv btn-back-inv">← Back</a>
-    <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank" class="btn-inv btn-print-inv">👁️ View PDF</a>
-    <a href="{{ route('invoices.pdf', $invoice->id) }}?action=download" class="btn-inv btn-print-inv">⬇️ Download</a>
-    <button onclick="window.print()" class="btn-inv btn-print-inv">🖨️ Print</button>
+{{-- Header সহ (default) --}}
+<a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank">
+    👁️ View PDF
+</a>
+
+<a href="{{ route('invoices.pdf', $invoice->id) }}?action=download">
+    ⬇️ Download
+</a>
+
+{{-- Header ছাড়া (pre-printed paper এর জন্য) --}}
+<a href="{{ route('invoices.pdf', $invoice->id) }}?header=false" target="_blank">
+    👁️ View PDF (No Header)
+</a>
+
+<a href="{{ route('invoices.pdf', $invoice->id) }}?header=false&action=download">
+    ⬇️ Download (No Header)
+</a>
 </div>
 
 <div class="invoice-wrap">

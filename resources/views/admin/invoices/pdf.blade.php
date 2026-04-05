@@ -5,11 +5,44 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <style>
 
+@if($showHeader ?? true)
 @page {
     size: A4;
-    margin: 18mm 22mm 18mm 22mm; /* ডানে ও বামে মার্জিন বাড়ানো হয়েছে */
+    margin-top: 0;
+    margin-bottom: 15mm; /* নিচে কিছুটা জায়গা কমানো হয়েছে */
+    margin-left: 12mm;   /* সাইড মার্জিন সামান্য কমানো হয়েছে যাতে body padding কাজ করতে পারে */
+    margin-right: 12mm;
+}
+@else
+@page {
+    size: A4;
+    margin-top: 0;
+    margin-bottom: 15mm;
+    margin-left: 12mm;
+    margin-right: 12mm;
+}
+@endif
+
+body {
+    font-family: 'DejaVu Sans', sans-serif;
+    font-size: 10.5px;
+    color: #1a1a1a;
+    background: #fff;
+    line-height: 1.4;
+    padding-left: 10px;  /* বাম দিকে পর্যাপ্ত গ্যাপ */
+    padding-right: 10px; /* ডান দিকে পর্যাপ্ত গ্যাপ */
+    
+    @if($showHeader ?? true)
+    margin-top: 20px;
+    @else
+    padding-top: 150px; 
+    @endif
 }
 
+/* নিশ্চিত করতে যে টেবিলগুলো পুরো উইডথ জুড়ে থাকবে কিন্তু প্যাডিং মেনে চলবে */
+.w100 { 
+    width: 100%; 
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -18,7 +51,12 @@ body {
     color: #1a1a1a;
     background: #fff;
     line-height: 1.4;
-    padding: 0 10px; /* ডানে-বামে অতিরিক্ত প্যাডিং */
+    /* নিচের অংশটুকু পরিবর্তন করা হয়েছে */
+    @if($showHeader ?? true)
+        margin-top: 20px;
+    @else
+        padding-top: 150px; /* margin এর বদলে padding ব্যবহার করুন */
+    @endif
 }
 
 .w100 { width: 100%; }
@@ -27,13 +65,41 @@ body {
 .fr   { float: right; }
 .r    { text-align: right; }
 
-/* ════ HEADER ════ */
+
+{{-- ═══════════════════════════════════════
+     FIXED SPACER
+     position:fixed → DomPDF repeats on every page
+     Sits at top:0 inside each page's margin area.
+
+     Header mode   → height:0, invisible
+     No-header mode → height:100px, same as @page margin-top
+                      So every page: margin provides 100px space,
+                      spacer fills it with white. Content starts below.
+═══════════════════════════════════════ --}}
+.fixed-spacer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    @if($showHeader ?? true)
+        height: 0;
+    @else
+        height: 150px;
+    @endif
+    background: #fff;
+    z-index: -1; /* কন্টেন্ট যেন নিচে না ঢাকা পড়ে তাই লেয়ার সেট করা */
+}
+
+/* ════ REAL HEADER ════ */
 .inv-header {
     width: 100%;
     border-bottom: 2px solid #1a1a1a;
     padding-bottom: 11px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     overflow: hidden;
+    @if(!($showHeader ?? true))
+    display: none;
+    @endif
 }
 
 .brand-name {
@@ -81,7 +147,7 @@ body {
 .ref-table.no-top { border-top: none; margin-bottom: 15px; }
 
 .ref-table td {
-    padding: 7px 12px; /* প্যাডিং বাড়ানো হয়েছে */
+    padding: 7px 12px;
     font-size: 9px;
     border-right: 1px solid #d0d0d0;
     width: 33.33%;
@@ -97,14 +163,13 @@ body {
     width: 100%;
     border-collapse: collapse;
     border: 1px solid #d0d0d0;
-    margin-top: 0;
     margin-bottom: 15px;
     table-layout: fixed;
 }
 
 .meta-box {
     width: 50%;
-    padding: 12px 15px; /* প্যাডিং বাড়ানো হয়েছে */
+    padding: 12px 15px;
     vertical-align: top;
     border-right: 1px solid #d0d0d0;
 }
@@ -174,7 +239,7 @@ table.items-table tbody td.r {
     font-size: 9px;
 }
 
-.sl-num { color: #bbb; font-family: 'DejaVu Sans Mono', monospace; font-size: 8px; }
+.sl-num    { color: #bbb; font-family: 'DejaVu Sans Mono', monospace; font-size: 8px; }
 .item-name { font-weight: 700; }
 .item-unit { color: #999; font-size: 8.5px; }
 
@@ -191,7 +256,7 @@ table.items-table tbody td.r {
 }
 
 tr.sub-row td {
-    background: transparent; /* ব্যাকগ্রাউন্ড রিমুভ করা হয়েছে */
+    background: transparent;
     border-top: 1px solid #ccc;
     border-bottom: 1.5px solid #1a1a1a;
     font-weight: 700;
@@ -201,7 +266,7 @@ tr.sub-row td {
     text-transform: uppercase;
 }
 
-/* ════ BOTTOM: WORDS + SUMMARY ════ */
+/* ════ BOTTOM ════ */
 .bottom-table {
     width: 100%;
     border-collapse: collapse;
@@ -316,12 +381,31 @@ table.sig-table td {
 
 .sig-sub { font-size: 6.5px; color: #aaa; letter-spacing: 0.8px; margin-top: 2px; }
 
+/* ════ FOOTER ════ */
+.inv-footer {
+    margin-top: 16px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+    overflow: hidden;
+    font-size: 7px;
+    color: #bbb;
+}
+
 </style>
 </head>
 <body>
+
+{{--
+    fixed-spacer sits at top:0 on EVERY page.
+    Header mode   → height 0, does nothing.
+    No-header mode → height 100px = @page margin-top 100px.
+                     The margin creates the space, spacer fills it white.
+                     Content flows naturally below on all pages.
+--}}
+<div class="fixed-spacer"></div>
+
 <div class="w100">
 
-    {{-- HEADER --}}
     <div class="inv-header">
         <div class="fl">
             <div class="brand-name">Ashis Auto Solution</div>
@@ -336,10 +420,8 @@ table.sig-table td {
         <div class="cf"></div>
     </div>
 
-    {{-- TITLE --}}
     <div class="doc-title">Customer Bill</div>
 
-    {{-- REF STRIP TOP --}}
     <table class="ref-table">
         <tr>
             <td><span class="rk">Registration:</span> <span class="rv">{{ $invoice->job->receive->car->registration_no }}</span></td>
@@ -348,7 +430,6 @@ table.sig-table td {
         </tr>
     </table>
 
-    {{-- REF STRIP BOTTOM --}}
     <table class="ref-table no-top">
         <tr>
             <td><span class="rk">VAT Reg No:</span> <span class="rv">006191423-0101</span></td>
@@ -357,7 +438,6 @@ table.sig-table td {
         </tr>
     </table>
 
-    {{-- CUSTOMER & VEHICLE --}}
     <table class="meta-table">
         <tr>
             <td class="meta-box">
@@ -379,7 +459,6 @@ table.sig-table td {
         </tr>
     </table>
 
-    {{-- ITEMS TABLE --}}
     @php
         $partItems    = $invoice->items->where('type', 'part');
         $workItems    = $invoice->items->where('type', 'work');
@@ -398,7 +477,6 @@ table.sig-table td {
             </tr>
         </thead>
         <tbody>
-
             @if($partItems->count())
             <tr><td colspan="6" class="section-tag-cell"><div class="section-tag">Parts</div></td></tr>
             @foreach($partItems as $i => $item)
@@ -452,11 +530,9 @@ table.sig-table td {
                 <td class="r">{{ number_format($invoice->service_total, 2) }}</td>
             </tr>
             @endif
-
         </tbody>
     </table>
 
-    {{-- BOTTOM --}}
     <table class="bottom-table">
         <tr>
             <td class="bl">
@@ -483,9 +559,13 @@ table.sig-table td {
                         <td>Bill Amount</td>
                         <td>{{ number_format($invoice->bill_amount, 2) }}</td>
                     </tr>
+                    <tr>
+                        <td>Discount</td>
+                        <td>{{ number_format($invoice->paymentDetails->sum('discount_amount') ?? 0, 2) }}</td>
+                    </tr>
                     <tr class="sum-pay">
-                        <td>Pay</td>
-                        <td>{{ number_format($invoice->paid ?? 0, 2) }}</td>
+                        <td>Paid</td>
+                        <td>{{ number_format($invoice->paid_amount ?? 0, 2) }}</td>
                     </tr>
                     <tr class="sum-due">
                         <td>Due Amount</td>
@@ -496,7 +576,6 @@ table.sig-table td {
         </tr>
     </table>
 
-    {{-- SIGNATURES --}}
     <table class="sig-table">
         <tr>
             <td>
@@ -517,6 +596,11 @@ table.sig-table td {
         </tr>
     </table>
 
+    <div class="inv-footer">
+        <span class="fl">Ashis Auto Solution &mdash; 100 Feet, Madani Avenue, Beraid, Dhaka 1212</span>
+        <span class="fr">Computer generated invoice</span>
+        <div class="cf"></div>
+    </div>
 
 </div>
 </body>
