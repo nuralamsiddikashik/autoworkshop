@@ -13,7 +13,15 @@ class MoneyReceiptController extends Controller {
     }
 
     public function index() {
-        return view( 'admin.money_receipts.index' );
+        $moneyReceipts = $this->repo->getMoneyReceiptsByCustomer( $perPage = 15 );
+
+        return view( 'admin.money_receipts.index', compact( 'moneyReceipts' ) );
+    }
+
+    public function show( $id ) {
+        $receipt = $this->repo->findReceiptById( $id );
+
+        return view( 'admin.money_receipts.show', compact( 'receipt' ) );
     }
 
     public function create() {

@@ -115,7 +115,7 @@ Route::prefix( 'money-receipts' )
     ->controller( MoneyReceiptController::class )
     ->group( function () {
 
-        Route::get( '/', 'index' )->name( 'money.receipts.index' );
+        Route::get( '/list', 'index' )->name( 'money.receipts.index' );
 
         Route::get( '/create', 'create' )->name( 'money.receipts.create' );
 
@@ -123,4 +123,7 @@ Route::prefix( 'money-receipts' )
 
         Route::get( '/customer/{id}/due-invoices', 'getCustomerDueInvoices' )
             ->name( 'money.receipts.customer.due.invoices' );
+
+        Route::get( '/show/{id}', 'show' )->name( 'money.receipts.show' );
+
     } );

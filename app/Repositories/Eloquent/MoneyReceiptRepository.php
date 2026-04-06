@@ -16,6 +16,26 @@ class MoneyReceiptRepository implements MoneyReceiptRepositoryInterface {
             ->get();
     }
 
+    public function getMoneyReceiptsByCustomer( $perPage = 15 ) {
+        return Payment::with( 'customer' )
+            ->latest()
+            ->paginate( $perPage );
+    }
+
+    public function findReceiptById( int $id ) {
+        return Payment::query()
+            ->select( 'id', 'customer_id', 'total_paid', 'payment_date' )
+            ->with( [
+                'customer:id,customer_name,owner_phone',
+
+                'details:id,payment_id,invoice_id,pay_amount,discount_amount',
+
+                // ✅ no assumption
+                'details.invoice',
+            ] )
+            ->findOrFail( $id );
+    }
+
     public function store( array $data ) {
         DB::transaction( function () use ( $data ) {
 

@@ -135,8 +135,11 @@
                     <th width="150">Job No</th>
                     <th>Customer Name</th>
                     <th>Vehicle Details</th>
+                    <th>Profit</th>
+                    <th>Vat 10%</th>
                     <th width="150">Total Amount</th>
-                    <th width="100" style="text-align: center;">Action</th>
+                    <th width="100" style="text-align: center;">View</th>
+                    <th width="100" style="text-align: center;">Edit</th>
                 </tr>
             </thead>
 
@@ -162,6 +165,12 @@
                                 {{ $inv->job->receive->car->brand->name ?? '' }} 
                                 {{ $inv->job->receive->car->model->name ?? '' }}
                             </span>
+                        </td>
+                        <td>
+                            <span class="amount-text">{{ number_format($inv->total_profit, 2) }}</span>
+                        </td>
+                        <td>
+                            <span class="amount-text">{{ number_format($inv->vat, 2) }}</span>
                         </td>
 
                         <td>
