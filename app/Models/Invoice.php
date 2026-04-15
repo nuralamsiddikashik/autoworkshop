@@ -2,42 +2,50 @@
 
 namespace App\Models;
 
-use App\Models\InvoiceItem;
-use App\Models\JobCard;
-use App\Models\PaymentDetail;
 use Illuminate\Database\Eloquent\Model;
 
-class Invoice extends Model {
+class Invoice extends Model
+{
     protected $fillable = [
         'job_card_id',
         'parts_total', 'works_total', 'service_total',
         'grand_total', 'vat', 'bill_amount', 'total_profit', 'paid_amount',
         'due_amount',
         'status',
+        'is_hidden',
     ];
 
-    public function items() {
-        return $this->hasMany( InvoiceItem::class );
+    protected $casts = [
+        'is_hidden' => 'boolean',
+    ];
+
+    public function items()
+    {
+        return $this->hasMany(InvoiceItem::class);
     }
 
-    public function parts() {
-        return $this->items()->where( 'type', 'part' );
+    public function parts()
+    {
+        return $this->items()->where('type', 'part');
     }
 
-    public function works() {
-        return $this->items()->where( 'type', 'work' );
+    public function works()
+    {
+        return $this->items()->where('type', 'work');
     }
 
-    public function services() {
-        return $this->items()->where( 'type', 'service' );
+    public function services()
+    {
+        return $this->items()->where('type', 'service');
     }
 
-    public function job() {
-        return $this->belongsTo( JobCard::class, 'job_card_id' );
+    public function job()
+    {
+        return $this->belongsTo(JobCard::class, 'job_card_id');
     }
 
-    public function paymentDetails() {
-        return $this->hasMany( PaymentDetail::class );
+    public function paymentDetails()
+    {
+        return $this->hasMany(PaymentDetail::class);
     }
-
 }
