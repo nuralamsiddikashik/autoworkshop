@@ -6,18 +6,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-    --bg:        #0F1117;
-    --surface:   #181C27;
-    --surface2:  #1E2333;
-    --border:    #2A3045;
-    --border2:   #353D55;
-    --accent:    #4F8EF7;
-    --accent2:   #3DDC97;
-    --danger:    #F76F6F;
-    --text:      #E8EAF0;
-    --muted:     #8B93A8;
-    --faint:     #3A4260;
-    --mono:      'JetBrains Mono', monospace;
+--bg:        #F4F6FA;
+--surface:   #FFFFFF;
+--surface2:  #F8F9FC;
+--border:    #E2E6EF;
+--border2:   #D0D6E4;
+--accent:    #E87B2A;   /* orange */
+--accent2:   #E87B2A;   /* blue */
+--danger:    #EF4444;
+--text:      #1A2035;
+--muted:     #7B8499;
+--faint:     #E2E6EF;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -229,7 +228,7 @@ table.inv-table tbody tr:hover td {
 
 .td-input.readonly {
     background: var(--faint);
-    color: var(--accent2);
+    color: var(--accent);
     font-weight: 500;
     cursor: default;
 }
