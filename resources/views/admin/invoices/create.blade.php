@@ -17,6 +17,7 @@
 --text:      #1A2035;
 --muted:     #7B8499;
 --faint:     #E2E6EF;
+--green: #059669;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -228,7 +229,7 @@ table.inv-table tbody tr:hover td {
 
 .td-input.readonly {
     background: var(--faint);
-    color: var(--accent);
+    color: var(--green);
     font-weight: 500;
     cursor: default;
 }
