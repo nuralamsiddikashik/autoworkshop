@@ -9,8 +9,8 @@
 @page {
     size: A4;
     margin-top: 0;
-    margin-bottom: 15mm; /* নিচে কিছুটা জায়গা কমানো হয়েছে */
-    margin-left: 12mm;   /* সাইড মার্জিন সামান্য কমানো হয়েছে যাতে body padding কাজ করতে পারে */
+    margin-bottom: 15mm; 
+    margin-left: 12mm;   
     margin-right: 12mm;
 }
 @else
@@ -24,13 +24,13 @@
 @endif
 
 body {
-    font-family: 'DejaVu Sans', sans-serif;
-    font-size: 10.5px;
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    font-size: 14px; /* Updated to 14px */
     color: #1a1a1a;
     background: #fff;
-    line-height: 1.4;
-    padding-left: 10px;  /* বাম দিকে পর্যাপ্ত গ্যাপ */
-    padding-right: 10px; /* ডান দিকে পর্যাপ্ত গ্যাপ */
+    line-height: 1.2;
+    padding-left: 10px;  
+    padding-right: 10px; 
     
     @if($showHeader ?? true)
     margin-top: 20px;
@@ -39,43 +39,16 @@ body {
     @endif
 }
 
-/* নিশ্চিত করতে যে টেবিলগুলো পুরো উইডথ জুড়ে থাকবে কিন্তু প্যাডিং মেনে চলবে */
 .w100 { 
     width: 100%; 
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial Narrow', Arial, sans-serif; }
 
-body {
-    font-family: 'DejaVu Sans', sans-serif;
-    font-size: 10.5px;
-    color: #1a1a1a;
-    background: #fff;
-    line-height: 1.4;
-    /* নিচের অংশটুকু পরিবর্তন করা হয়েছে */
-    @if($showHeader ?? true)
-        margin-top: 20px;
-    @else
-        padding-top: 150px; /* margin এর বদলে padding ব্যবহার করুন */
-    @endif
-}
-
-.w100 { width: 100%; }
 .cf   { clear: both; }
 .fl   { float: left; }
 .fr   { float: right; }
 .r    { text-align: right; }
 
-
-{{-- ═══════════════════════════════════════
-     FIXED SPACER
-     position:fixed → DomPDF repeats on every page
-     Sits at top:0 inside each page's margin area.
-
-     Header mode   → height:0, invisible
-     No-header mode → height:100px, same as @page margin-top
-                      So every page: margin provides 100px space,
-                      spacer fills it with white. Content starts below.
-═══════════════════════════════════════ --}}
 .fixed-spacer {
     position: fixed;
     top: 0;
@@ -87,7 +60,7 @@ body {
         height: 150px;
     @endif
     background: #fff;
-    z-index: -1; /* কন্টেন্ট যেন নিচে না ঢাকা পড়ে তাই লেয়ার সেট করা */
+    z-index: -1; 
 }
 
 /* ════ REAL HEADER ════ */
@@ -103,14 +76,14 @@ body {
 }
 
 .brand-name {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     letter-spacing: -0.3px;
     line-height: 1;
 }
 
 .brand-tagline {
-    font-size: 7px;
+    font-size: 9px;
     letter-spacing: 2.5px;
     text-transform: uppercase;
     color: #777;
@@ -119,7 +92,7 @@ body {
 
 .company-addr {
     text-align: right;
-    font-size: 8.5px;
+    font-size: 12px;
     line-height: 1.8;
     color: #444;
 }
@@ -127,7 +100,7 @@ body {
 /* ════ TITLE ════ */
 .doc-title {
     text-align: center;
-    font-size: 10.5px;
+    font-size: 14px; /* Updated to 14px */
     font-weight: 700;
     letter-spacing: 4px;
     text-transform: uppercase;
@@ -148,7 +121,7 @@ body {
 
 .ref-table td {
     padding: 7px 12px;
-    font-size: 9px;
+    font-size: 13px;
     border-right: 1px solid #d0d0d0;
     width: 33.33%;
 }
@@ -156,7 +129,7 @@ body {
 .ref-table td:last-child { border-right: none; }
 
 .rk { font-weight: 700; color: #111; }
-.rv { font-family: 'DejaVu Sans Mono', monospace; font-size: 8.5px; color: #1a1a1a; }
+.rv { font-size: 13px; color: #1a1a1a; }
 
 /* ════ META INFO ════ */
 .meta-table {
@@ -177,7 +150,7 @@ body {
 .meta-box:last-child { border-right: none; }
 
 .meta-box-title {
-    font-size: 6.5px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -187,82 +160,83 @@ body {
     border-bottom: 1px solid #eee;
 }
 
-.mr { width: 100%; margin-bottom: 3px; font-size: 9.5px; overflow: hidden; }
+.mr { width: 100%; margin-bottom: 3px; font-size: 14px; overflow: hidden; }
 
 .mr .mk {
     float: left;
-    width: 84px;
+    width: 110px;
     font-weight: 600;
     color: #555;
-    font-size: 9px;
+    font-size: 13px;
 }
 
 .mr .mv {
     display: block;
-    margin-left: 88px;
+    margin-left: 115px;
     color: #111;
 }
 
-.mv-mono { font-family: 'DejaVu Sans Mono', monospace; font-size: 8.5px; }
+.mv-mono { font-size: 13px; }
 
 /* ════ ITEMS TABLE ════ */
 table.items-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
+    border: 1px solid #d0d0d0;
 }
 
 table.items-table thead th {
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 7px;
+    background: transparent;
+    color: #1a1a1a;
+    border: 1px solid #d0d0d0;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    padding: 8px 10px;
+    padding: 2px 10px;
     text-align: left;
 }
 
 table.items-table thead th.r { text-align: right; }
 
 table.items-table tbody td {
-    padding: 7px 10px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 2px 10px;
+    border: 1px solid #d0d0d0;
     color: #222;
     vertical-align: middle;
-    font-size: 9.5px;
+    font-size: 14px; /* Updated to 14px */
 }
 
 table.items-table tbody td.r {
     text-align: right;
-    font-family: 'DejaVu Sans Mono', monospace;
-    font-size: 9px;
+    font-size: 13px;
 }
 
-.sl-num    { color: #bbb; font-family: 'DejaVu Sans Mono', monospace; font-size: 8px; }
-.item-name { font-weight: 700; }
-.item-unit { color: #999; font-size: 8.5px; }
+.sl-num    { color: #bbb; font-size: 12px; }
+.item-name { font-weight: 400; } 
+.item-unit { color: #999; font-size: 13px; }
 
-.section-tag-cell { padding: 0 !important; border-bottom: none !important; background: #f7f7f7; }
+.section-tag-cell { padding: 0 !important; border: 1px solid #d0d0d0 !important; background: #f7f7f7; }
 
 .section-tag {
-    font-size: 6.5px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 2.5px;
     text-transform: uppercase;
     color: #555;
-    padding: 5px 10px;
+    padding: 2px 10px;
     border-left: 2.5px solid #1a1a1a;
 }
 
 tr.sub-row td {
     background: transparent;
-    border-top: 1px solid #ccc;
+    border: 1px solid #d0d0d0;
     border-bottom: 1.5px solid #1a1a1a;
     font-weight: 700;
-    font-size: 8.5px;
+    font-size: 14px; /* Consistent with request */
     letter-spacing: 0.5px;
-    padding: 7px 10px;
+    padding: 3px 10px;
     text-transform: uppercase;
 }
 
@@ -275,8 +249,8 @@ tr.sub-row td {
 }
 
 .bottom-table td { vertical-align: top; }
-.bottom-table .bl { width: 52%; padding-right: 15px; }
-.bottom-table .br { width: 48%; }
+.bottom-table .bl { width: 55%; padding-right: 15px; }
+.bottom-table .br { width: 45%; }
 
 .words-box {
     border: 1px solid #d0d0d0;
@@ -286,7 +260,7 @@ tr.sub-row td {
 }
 
 .words-lbl {
-    font-size: 6.5px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -294,12 +268,12 @@ tr.sub-row td {
     margin-bottom: 4px;
 }
 
-.words-txt { font-style: italic; font-size: 9.5px; line-height: 1.5; color: #111; }
+.words-txt { font-style: italic; font-size: 14px; line-height: 1.5; color: #111; }
 
 .note-box { border: 1px dashed #d0d0d0; padding: 10px 12px; min-height: 34px; }
 
 .note-lbl {
-    font-size: 6.5px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -311,44 +285,48 @@ table.sum-table {
     width: 100%;
     border-collapse: collapse;
     border: 1px solid #d0d0d0;
+    max-width: 180px;       
+    margin-left: auto;      
 }
 
 table.sum-table tr td {
-    padding: 6px 10px;
-    font-size: 9.5px;
+    padding: 5px 10px;       
+    font-size: 13px;         
     border-bottom: 1px solid #eee;
     color: #333;
 }
 
 table.sum-table tr td:last-child {
     text-align: right;
-    font-family: 'DejaVu Sans Mono', monospace;
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 600;
     color: #111;
 }
 
-table.sum-table tr.sum-divider td {
+table.sum-table tr.sum-divider {
     border-top: 1.5px solid #1a1a1a;
+}
+
+table.sum-table tr.sum-divider td {
     font-weight: 700;
-    font-size: 10px;
+    font-size: 14px;
 }
 
 table.sum-table tr.sum-pay td { color: #999; }
 
 table.sum-table tr.sum-due td {
-    background: #1a1a1a;
-    color: #fff;
+    background: transparent;
+    color: #1a1a1a;
+    border-top: 1.5px solid #1a1a1a;
     font-weight: 700;
-    font-size: 11px;
+    font-size: 14px;
     border-bottom: none;
-    padding: 8px 10px;
+    padding: 6px 10px;
 }
 
 table.sum-table tr.sum-due td:last-child {
-    color: #fff;
-    font-family: 'DejaVu Sans Mono', monospace;
-    font-size: 10.5px;
+    color: #1a1a1a;
+    font-size: 14px;
 }
 
 /* ════ SIGNATURES ════ */
@@ -372,14 +350,14 @@ table.sig-table td {
 .sig-line {
     border-top: 1px solid #1a1a1a;
     padding-top: 5px;
-    font-size: 7.5px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: #333;
 }
 
-.sig-sub { font-size: 6.5px; color: #aaa; letter-spacing: 0.8px; margin-top: 2px; }
+.sig-sub { font-size: 9px; color: #aaa; letter-spacing: 0.8px; margin-top: 2px; }
 
 /* ════ FOOTER ════ */
 .inv-footer {
@@ -387,7 +365,7 @@ table.sig-table td {
     padding-top: 8px;
     border-top: 1px solid #eee;
     overflow: hidden;
-    font-size: 7px;
+    font-size: 10px;
     color: #bbb;
 }
 
@@ -395,13 +373,6 @@ table.sig-table td {
 </head>
 <body>
 
-{{--
-    fixed-spacer sits at top:0 on EVERY page.
-    Header mode   → height 0, does nothing.
-    No-header mode → height 100px = @page margin-top 100px.
-                     The margin creates the space, spacer fills it white.
-                     Content flows naturally below on all pages.
---}}
 <div class="fixed-spacer"></div>
 
 <div class="w100">
@@ -444,17 +415,17 @@ table.sig-table td {
                 <div class="meta-box-title">Customer Information</div>
                 <div class="mr"><span class="mk">Account Name</span><span class="mv">{{ $invoice->job->receive->customer->account_name ?? $invoice->job->receive->customer->customer_name }}</span></div>
                 <div class="mr"><span class="mk">Customer Name</span><span class="mv">{{ $invoice->job->receive->customer->customer_name }}</span></div>
-                <div class="mr"><span class="mk">Tel / Phone</span><span class="mv mv-mono">{{ $invoice->job->receive->customer->owner_phone ?? '—' }}</span></div>
+                <div class="mr"><span class="mk">Tel / Phone</span><span class="mv">{{ $invoice->job->receive->customer->owner_phone ?? '—' }}</span></div>
                 <div class="mr"><span class="mk">Driver</span><span class="mv">{{ $invoice->job->receive->customer->driver_name ?? '—' }}@if($invoice->job->receive->customer->driver_phone) ({{ $invoice->job->receive->customer->driver_phone }})@endif</span></div>
                 <div class="mr"><span class="mk">Address</span><span class="mv">{{ $invoice->job->receive->customer->address ?? '—' }}</span></div>
             </td>
             <td class="meta-box">
                 <div class="meta-box-title">Vehicle Details</div>
-                <div class="mr"><span class="mk">Estimate No</span><span class="mv mv-mono">{{ $invoice->estimate_no ?? '0' }}</span></div>
-                <div class="mr"><span class="mk">Chassis</span><span class="mv mv-mono">{{ $invoice->job->receive->car->vin ?? '—' }}</span></div>
-                <div class="mr"><span class="mk">Engine No</span><span class="mv mv-mono">{{ $invoice->job->receive->car->engine_no ?? '—' }}</span></div>
+                <div class="mr"><span class="mk">Estimate No</span><span class="mv">{{ $invoice->estimate_no ?? '0' }}</span></div>
+                <div class="mr"><span class="mk">Chassis</span><span class="mv">{{ $invoice->job->receive->car->vin ?? '—' }}</span></div>
+                <div class="mr"><span class="mk">Engine No</span><span class="mv">{{ $invoice->job->receive->car->engine_no ?? '—' }}</span></div>
                 <div class="mr"><span class="mk">Brand / Model</span><span class="mv">{{ $invoice->job->receive->car->brand->name }} {{ $invoice->job->receive->car->model->name }}</span></div>
-                <div class="mr"><span class="mk">KM</span><span class="mv mv-mono">{{ number_format($invoice->job->receive->km ?? 0) }}</span></div>
+                <div class="mr"><span class="mk">KM</span><span class="mv">{{ number_format($invoice->job->receive->km ?? 0) }}</span></div>
             </td>
         </tr>
     </table>
@@ -486,7 +457,7 @@ table.sig-table td {
                 <td class="r">{{ $item->qty }}</td>
                 <td class="item-unit">{{ $item->unit ?? 'Pc' }}</td>
                 <td class="r">{{ number_format($item->sell_price, 2) }}</td>
-                <td class="r" style="font-weight:700;">{{ number_format($item->total, 2) }}</td>
+                <td class="r">{{ number_format($item->total, 2) }}</td>
             </tr>
             @endforeach
             <tr class="sub-row">
@@ -504,7 +475,7 @@ table.sig-table td {
                 <td class="r">{{ $item->qty }}</td>
                 <td class="item-unit">{{ $item->unit ?? 'Unit' }}</td>
                 <td class="r">{{ number_format($item->sell_price, 2) }}</td>
-                <td class="r" style="font-weight:700;">{{ number_format($item->total, 2) }}</td>
+                <td class="r">{{ number_format($item->total, 2) }}</td>
             </tr>
             @endforeach
             <tr class="sub-row">
@@ -522,7 +493,7 @@ table.sig-table td {
                 <td class="r">{{ $item->qty }}</td>
                 <td class="item-unit">{{ $item->unit ?? 'Unit' }}</td>
                 <td class="r">{{ number_format($item->sell_price, 2) }}</td>
-                <td class="r" style="font-weight:700;">{{ number_format($item->total, 2) }}</td>
+                <td class="r">{{ number_format($item->total, 2) }}</td>
             </tr>
             @endforeach
             <tr class="sub-row">
@@ -542,7 +513,7 @@ table.sig-table td {
                 </div>
                 <div class="note-box">
                     <div class="note-lbl">Note</div>
-                    <div style="font-size:9px; color:#555; margin-top:2px;">{{ $invoice->note ?? '' }}</div>
+                    <div style="font-size:13px; color:#555; margin-top:2px;">{{ $invoice->note ?? '' }}</div>
                 </div>
             </td>
             <td class="br">
